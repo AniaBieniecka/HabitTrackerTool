@@ -1,4 +1,4 @@
-using HabitTrackerWeb.Models;
+using HabitTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
