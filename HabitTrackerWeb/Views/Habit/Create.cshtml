@@ -1,0 +1,22 @@
+﻿@model Habit
+
+<h2 class="py-2">Create Habit</h2>
+
+<form method="post">
+
+    <div class="form-floating">
+        <input asp-for="Name" class="form-control"></input>
+        <label asp-for="Name" class="text-dark"></label>
+        <span asp-validation-for="Name" class="text-primary"></span>
+    </div>
+    <button type="submit" class="btn btn-primary" width="50">Create</button>
+    <a asp-controller="Habit" asp-action="Index" class="btn btn-primary">
+        Back to List
+    </a>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
