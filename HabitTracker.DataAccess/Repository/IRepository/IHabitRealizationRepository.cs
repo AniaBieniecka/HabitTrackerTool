@@ -10,6 +10,7 @@ namespace HabitTracker.DataAccess.Repository.IRepository
 {
     public interface IHabitRealizationRepository: IRepository<HabitRealization>
     {
+
         void Update(HabitRealization obj);
 
     }

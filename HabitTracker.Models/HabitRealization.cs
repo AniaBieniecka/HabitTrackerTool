@@ -12,8 +12,9 @@ namespace HabitTracker.Models
     {
         public int Id { get; set; }
         public bool IfExecuted { get; set; } = false;
-        public int DaysRangeId { get; set; }
-        [ForeignKey("DaysRangeId")]
-        public TimePeriod daysTracked { get; set; }
+        public DateOnly Date { get; set; }
+        public int HabitId { get; set; }
+        [ForeignKey("HabitId")]
+        public Habit habit { get; set; }
     }
 }
