@@ -1,15 +1,24 @@
 ﻿@model List<Habit>
 
-<h2 class="py-2">Habit List</h2>
-<a asp-controller="Habit" asp-action="Create" class="btn btn-primary">
+<h2 class="py-2">Habit View</h2>
+<a asp-controller="Habit" asp-action="Create" class="btn btn-primary m-2">
     Create New Habit
 </a>
 
-<table class="table  table-striped">
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>Habit Name</th>
-            <th></th>
+            <th style="width:20%">Habit Name</th>
+            <th style="width:8%">Monday</th>
+            <th style="width:8%">Tuesday</th>
+            <th style="width:8%">Wednesday</th>
+            <th style="width:8%">Thursday</th>
+            <th style="width:8%">Friday</th>
+            <th style="width:8%">Saturday</th>
+            <th style="width:8%">Sunday</th>
+            <th style="width:8%">Your goal</th>
+            <th style="width:8%">Completed</th>
+            <th style="width:8%">Edit</th>
         </tr>
     </thead>
     <tbody>
@@ -18,9 +27,18 @@
         {
             <tr>
                 <td>@obj.Name</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>@obj.QuantityPerWeek</td>
+                <td></td>
                 <td>
 
-                    <a asp-controller="Habit" asp-action="Edit" asp-route-id="@obj.Id" class="btn">
+                    <a asp-controller="Habit" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-primary">
                     </a>
                     <a asp-controller="Habit" asp-action="Delete" asp-route-id="@obj.Id" class="btn">
                     </a>
@@ -31,3 +49,6 @@
 
     </tbody>
 </table>
+<a asp-controller="Habit" asp-action="" class="btn btn-primary">
+    Next week has come?
+</a>
