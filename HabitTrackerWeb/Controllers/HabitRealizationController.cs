@@ -1,6 +1,7 @@
 ﻿using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -14,10 +15,11 @@ namespace HabitTrackerWeb.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult HabitsWeekly()
         {
-            List<HabitRealization> objHabitRealizationList = _unitOfWork.HabitRealization.GetAll().ToList();
-            return View(objHabitRealizationList);
+            List<Habit> habits= _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+
+            return View(habits);
         }
     }
 }
