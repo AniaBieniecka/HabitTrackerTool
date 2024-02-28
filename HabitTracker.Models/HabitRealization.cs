@@ -11,8 +11,12 @@ namespace HabitTracker.Models
     public class HabitRealization
     {
         public int Id { get; set; }
-        public bool IfExecuted { get; set; } = false;
+        public int IfExecuted { get; set; } = 0;
+
+        //0 - false, 1 - true, 2 - partially executed
         public DateOnly Date { get; set; }
+
+
         public int HabitId { get; set; }
         [ForeignKey("HabitId")]
         public Habit habit { get; set; }
