@@ -26,5 +26,7 @@ namespace HabitTracker.Models
             QuantityPerWeek = 7;
         }
 
+        public List<HabitRealization> habitRealizations { get; set; }
+
     }
 }

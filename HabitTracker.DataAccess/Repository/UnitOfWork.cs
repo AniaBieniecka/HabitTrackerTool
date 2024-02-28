@@ -24,7 +24,6 @@ namespace HabitTracker.DataAccess.Repositry
             _db = db;
             Habit = new HabitRepository(_db);
             HabitRealization = new HabitRealizationRepository(_db);
-            TimePeriod = new TimePeriodRepository(_db);
 
         }
 

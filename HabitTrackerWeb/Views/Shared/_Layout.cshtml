@@ -26,7 +26,10 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="Index">Habit</a>
+                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="HabitsWeekly">Your habit</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="Index">Habit List</a>
                         </li>
                     </ul>
                 </div>
@@ -41,12 +44,14 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - HabitTrackerWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - HabitTrackerWeb - <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+            asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

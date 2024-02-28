@@ -30,11 +30,28 @@ namespace HabitTrackerWeb.Controllers
         [HttpPost]
         public IActionResult Create(Habit obj)
         {
+            DateTime now = DateTime.Now;
+            DateOnly Today = DateOnly.FromDateTime(now);
+            DayOfWeek WeekDayToday = Today.DayOfWeek;
+
+            DateOnly startOfWeek = Today.AddDays(-(int)Today.DayOfWeek); // - Monday date
+
             if (ModelState.IsValid)
             {
                 _unitOfWork.Habit.Add(obj);
                 _unitOfWork.Save();
-                TempData["success"] = "Category created successfully";
+
+                for (int i = 0; i < 7; i++)
+                {
+                    HabitRealization habitDay = new HabitRealization();
+                    habitDay.Date = startOfWeek;
+                    startOfWeek = startOfWeek.AddDays(1);
+                    habitDay.HabitId = obj.Id;
+                    _unitOfWork.HabitRealization.Add(habitDay);
+                    _unitOfWork.Save();
+                }
+
+                TempData["success"] = "Habit created successfully";
                 return RedirectToAction("Index");
             }
             return View();
