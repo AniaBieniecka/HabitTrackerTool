@@ -10,7 +10,6 @@ namespace HabitTracker.DataAccess.Repository.IRepository
     public interface IUnitOfWork
     {
         IHabitRepository Habit { get; }
-        ITimePeriodRepository TimePeriod { get; }
         IHabitRealizationRepository HabitRealization { get; }
         void Save();
     }
