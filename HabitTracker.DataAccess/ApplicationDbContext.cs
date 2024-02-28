@@ -15,7 +15,6 @@ namespace HabitTracker.DataAccess.Data
         }
 
         public DbSet<Habit> Habits {  get; set; }
-        public DbSet<TimePeriod> TimePeriods { get; set; }
         public DbSet<HabitRealization> HabitRealizations { get; set; }
 
 

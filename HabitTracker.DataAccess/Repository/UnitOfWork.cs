@@ -15,7 +15,6 @@ namespace HabitTracker.DataAccess.Repositry
     {
         private ApplicationDbContext _db;
         public IHabitRepository Habit { get; set; }
-        public ITimePeriodRepository TimePeriod { get; set; }
         public IHabitRealizationRepository HabitRealization { get; set; }
 
 
