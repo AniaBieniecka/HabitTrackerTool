@@ -1,5 +1,7 @@
 ﻿@model List<Habit>
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
 
@@ -34,12 +36,13 @@
 
                     @foreach (var obj in habit.habitRealizations)
                     {
-                        <td>
-                            @if (obj.IfExecuted == 0)
+                        <td id="@obj.Id" onclick="updateIfExecuted(@obj.Id)" )>
+                            @if (obj.IfExecuted == 1)
                             {
                                 <i class="bi bi-check-square"></i>
 
                             }
+                            <input type="hidden" id="obj.Id" value="@obj.Id" />
 
                         </td>
 
@@ -64,3 +67,24 @@
     </a>
 
 </body>
+
+
+
+<script>
+    function updateIfExecuted(itemId) {
+
+        // Wywołanie kontrolera za pomocą AJAX, aby zaktualizować IfExecuted w bazie danych
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateIfExecuted", "HabitRealization")',
+            data: { id: itemId },
+            success: function (result) {
+                // Jeśli operacja się powiodła, możesz wykonać dodatkowe akcje
+                console.log("IfExecuted updated successfully");
+            },
+            error: function (xhr, status, error) {
+                console.error("Error updating IfExecuted:", error);
+            }
+        });
+    }
+</script>
