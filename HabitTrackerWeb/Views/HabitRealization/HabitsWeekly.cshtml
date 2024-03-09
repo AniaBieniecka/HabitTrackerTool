@@ -44,6 +44,11 @@
                                 {
                                     <i class="bi bi-check-square-fill" style="color:#3CB371;"></i>
                                 }
+                                else if (obj.IfExecuted == 2)
+                                {
+                                    <i class="bi bi-check-square" style="color:#3CB371;"></i>
+
+                                }
 
                             </span>
 
@@ -78,7 +83,7 @@
 <script>
     function updateIfExecutedStatus(itemId, ifExecuted) {
 
-        
+
         $.ajax({
             type: "GET",
             url: '@Url.Action("UpdateIfExecuted", "HabitRealization")',
@@ -89,9 +94,12 @@
 
                 if (result.ifExecuted === 1) {
                     $("#icon-" + itemId).html('<i class="bi bi-check-square-fill"></i>');
-                } else {
+                } else if (result.ifExecuted === 2) {
+                    $("#icon-" + itemId).html('<i class="bi bi-check-square"></i>');
+
+                } else
                     $("#icon-" + itemId).html('');
-                }
+
             },
             error: function (xhr, status, error) {
                 console.error("Error updating IfExecuted:", error);
