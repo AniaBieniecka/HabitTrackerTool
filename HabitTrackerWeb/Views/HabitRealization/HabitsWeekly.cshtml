@@ -36,12 +36,17 @@
 
                     @foreach (var obj in habit.habitRealizations)
                     {
-                        <td id="@obj.Id" onclick="updateIfExecuted(@obj.Id)" )>
-                            @if (obj.IfExecuted == 1)
-                            {
-                                <i class="bi bi-check-square"></i>
+                        <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted)" )>
 
-                            }
+                            <span id="icon-@obj.Id" style="color:#3CB371;">
+
+                                @if (obj.IfExecuted == 1)
+                                {
+                                    <i class="bi bi-check-square-fill" style="color:#3CB371;"></i>
+                                }
+
+                            </span>
+
                             <input type="hidden" id="obj.Id" value="@obj.Id" />
 
                         </td>
@@ -58,7 +63,7 @@
                     </td>
                 </tr>
             }
-            
+
 
         </tbody>
     </table>
@@ -71,20 +76,27 @@
 
 
 <script>
-    function updateIfExecuted(itemId) {
+    function updateIfExecutedStatus(itemId, ifExecuted) {
 
-        // Wywołanie kontrolera za pomocą AJAX, aby zaktualizować IfExecuted w bazie danych
+        
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: '@Url.Action("UpdateIfExecuted", "HabitRealization")',
             data: { id: itemId },
             success: function (result) {
                 // Jeśli operacja się powiodła, możesz wykonać dodatkowe akcje
                 console.log("IfExecuted updated successfully");
+
+                if (result.ifExecuted === 1) {
+                    $("#icon-" + itemId).html('<i class="bi bi-check-square-fill"></i>');
+                } else {
+                    $("#icon-" + itemId).html('');
+                }
             },
             error: function (xhr, status, error) {
                 console.error("Error updating IfExecuted:", error);
             }
         });
+
     }
 </script>

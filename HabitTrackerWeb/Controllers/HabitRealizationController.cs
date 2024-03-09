@@ -4,6 +4,7 @@ using HabitTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -24,9 +25,11 @@ namespace HabitTrackerWeb.Controllers
             return View(habits);
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult UpdateIfExecuted(int id)
         {
+            try
+            {
             var item =  _unitOfWork.HabitRealization.Get(u=>u.Id == id);
             if (item == null)
             {
@@ -37,12 +40,19 @@ namespace HabitTrackerWeb.Controllers
             {
                 item.IfExecuted = 1;
             }
+            
             else item.IfExecuted = 0;
 
             _unitOfWork.HabitRealization.Update(item);
             _unitOfWork.Save();
 
-            return Ok();
+            return Json(new { ifExecuted = item.IfExecuted });
+            }
+            catch (Exception ex)
+            {
+                // Jeśli wystąpił błąd, zwróć odpowiedni kod błędu
+                return new StatusCodeResult(404);
+            }
         }
     }
 }
