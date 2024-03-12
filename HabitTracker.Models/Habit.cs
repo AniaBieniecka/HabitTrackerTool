@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -26,6 +27,7 @@ namespace HabitTracker.Models
             QuantityPerWeek = 7;
         }
 
+        [ValidateNever]
         public List<HabitRealization> habitRealizations { get; set; }
 
     }
