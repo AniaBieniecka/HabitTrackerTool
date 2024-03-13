@@ -17,6 +17,13 @@ namespace HabitTracker.DataAccess.Data
         public DbSet<Habit> Habits {  get; set; }
         public DbSet<HabitRealization> HabitRealizations { get; set; }
 
+        public DbSet<ViewSetting> ViewSettings { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ViewSetting>().HasData(new ViewSetting { Id = 1, Color = "00CED1", IconPartiallyDone = "bi bi-check-square", IconDone = "bi bi-check-square-fill" });
+
+        }
 
     }
 

@@ -67,7 +67,7 @@ namespace HabitTracker.DataAccess.Migrations
                     b.ToTable("HabitRealizations");
                 });
 
-            modelBuilder.Entity("HabitTracker.Models.TimePeriod", b =>
+            modelBuilder.Entity("HabitTracker.Models.ViewSetting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,26 +75,36 @@ namespace HabitTracker.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("HabitId")
-                        .HasColumnType("int");
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LevelId")
-                        .HasColumnType("int");
+                    b.Property<string>("IconDone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LevelName")
+                    b.Property<string>("IconPartiallyDone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HabitId");
+                    b.ToTable("ViewSettings");
 
-                    b.ToTable("TimePeriods");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Color = "00CED1",
+                            IconDone = "bi bi-check-square-fill",
+                            IconPartiallyDone = "bi bi-check-square"
+                        });
                 });
 
             modelBuilder.Entity("HabitTracker.Models.HabitRealization", b =>
                 {
                     b.HasOne("HabitTracker.Models.Habit", "habit")
-                        .WithMany()
+                        .WithMany("habitRealizations")
                         .HasForeignKey("HabitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -102,15 +112,9 @@ namespace HabitTracker.DataAccess.Migrations
                     b.Navigation("habit");
                 });
 
-            modelBuilder.Entity("HabitTracker.Models.TimePeriod", b =>
+            modelBuilder.Entity("HabitTracker.Models.Habit", b =>
                 {
-                    b.HasOne("HabitTracker.Models.Habit", "habit")
-                        .WithMany()
-                        .HasForeignKey("HabitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("habit");
+                    b.Navigation("habitRealizations");
                 });
 #pragma warning restore 612, 618
         }
