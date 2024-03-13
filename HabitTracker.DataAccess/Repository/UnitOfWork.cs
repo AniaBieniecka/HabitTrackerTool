@@ -16,6 +16,7 @@ namespace HabitTracker.DataAccess.Repositry
         private ApplicationDbContext _db;
         public IHabitRepository Habit { get; set; }
         public IHabitRealizationRepository HabitRealization { get; set; }
+        public IViewSettingRepository ViewSetting { get; set; }
 
 
         public UnitOfWork(ApplicationDbContext db) 
@@ -23,6 +24,7 @@ namespace HabitTracker.DataAccess.Repositry
             _db = db;
             Habit = new HabitRepository(_db);
             HabitRealization = new HabitRealizationRepository(_db);
+            ViewSetting = new ViewSettingRepository(_db);
 
         }
 
