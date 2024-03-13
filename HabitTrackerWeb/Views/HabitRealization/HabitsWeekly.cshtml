@@ -36,17 +36,17 @@
 
                     @foreach (var obj in habit.habitRealizations)
                     {
-                        <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted)" )>
+                        <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
 
-                            <span id="icon-@obj.Id" style="color:#3CB371;">
+                            <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
 
                                 @if (obj.IfExecuted == 1)
                                 {
-                                    <i class="bi bi-check-square-fill" style="color:#3CB371;"></i>
+                                    <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
                                 }
                                 else if (obj.IfExecuted == 2)
                                 {
-                                    <i class="bi bi-check-square" style="color:#3CB371;"></i>
+                                    <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
 
                                 }
 
@@ -81,8 +81,7 @@
 
 
 <script>
-    function updateIfExecutedStatus(itemId, ifExecuted) {
-
+    function updateIfExecutedStatus(itemId, ifExecuted, icon) {
 
         $.ajax({
             type: "GET",
@@ -93,9 +92,9 @@
                 console.log("IfExecuted updated successfully");
 
                 if (result.ifExecuted === 1) {
-                    $("#icon-" + itemId).html('<i class="bi bi-check-square-fill"></i>');
+                    $("#icon-" + itemId).html('<i class="'+icon+'-fill"></i>');
                 } else if (result.ifExecuted === 2) {
-                    $("#icon-" + itemId).html('<i class="bi bi-check-square"></i>');
+                    $("#icon-" + itemId).html('<i class="'+icon+'"></i>');
 
                 } else
                     $("#icon-" + itemId).html('');

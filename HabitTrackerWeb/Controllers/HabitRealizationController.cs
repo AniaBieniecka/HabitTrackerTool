@@ -22,6 +22,11 @@ namespace HabitTrackerWeb.Controllers
         {
             List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
 
+            foreach (Habit hab in habits)
+            {
+                hab.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+            }
+
             return View(habits);
         }
 
