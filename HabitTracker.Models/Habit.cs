@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
@@ -29,6 +30,10 @@ namespace HabitTracker.Models
 
         [ValidateNever]
         public List<HabitRealization> habitRealizations { get; set; }
+
+        [ValidateNever]
+        [NotMapped]
+        public ViewSetting ViewSetting { get; set; }
 
     }
 }

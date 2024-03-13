@@ -51,7 +51,12 @@ namespace HabitTrackerWeb.Controllers
             }
 
             List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
-            return RedirectToAction("Views/HabitRealization/HabitsWeekly.cshtml", habits);
+
+            foreach (Habit hab in habits)
+            {
+                hab.ViewSetting = viewSetting;
+            }
+            return View("Views/HabitRealization/HabitsWeekly.cshtml", habits);
         }
     }
 }
