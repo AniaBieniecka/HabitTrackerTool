@@ -23,7 +23,8 @@ namespace HabitTracker.Models
         [Range(1, 7, ErrorMessage = "Wartość musi być większa lub równa 1, ale mniejsza od 7.")]
         public int QuantityPerWeek {  get; set; }
 
-
+        [DisplayName("Week number")]
+        public int WeekNumber { get; set; }
         public Habit() {
             QuantityPerWeek = 7;
         }
