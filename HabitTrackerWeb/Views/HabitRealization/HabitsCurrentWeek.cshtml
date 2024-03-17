@@ -72,7 +72,9 @@
 
         </tbody>
     </table>
-
+    <a asp-controller="Habit" asp-action="" class="btn btn-primary">
+        Next week has come?
+    </a>
 
 </body>
 
@@ -90,9 +92,9 @@
                 console.log("IfExecuted updated successfully");
 
                 if (result.ifExecuted === 1) {
-                    $("#icon-" + itemId).html('<i class="' + icon + '-fill"></i>');
+                    $("#icon-" + itemId).html('<i class="'+icon+'-fill"></i>');
                 } else if (result.ifExecuted === 2) {
-                    $("#icon-" + itemId).html('<i class="' + icon + '"></i>');
+                    $("#icon-" + itemId).html('<i class="'+icon+'"></i>');
 
                 } else
                     $("#icon-" + itemId).html('');

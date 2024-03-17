@@ -4,6 +4,7 @@ using HabitTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Net;
 
 namespace HabitTrackerWeb.Controllers
@@ -18,9 +19,25 @@ namespace HabitTrackerWeb.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult HabitsWeekly()
+        public IActionResult HabitsWeekly(int? week, int? year)
         {
-            List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+            List<Habit> habits = _unitOfWork.Habit.GetAll(u=>u.WeekNumber==week&& u.Year==year, includeProperties: "habitRealizations").ToList();
+
+            foreach (Habit hab in habits)
+            {
+                hab.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+            }
+
+            return View(habits);
+        }
+
+        public IActionResult HabitsCurrentWeek()
+        {
+
+            int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int year = DateTime.Now.Year;
+
+            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations").ToList();
 
             foreach (Habit hab in habits)
             {
@@ -58,7 +75,6 @@ namespace HabitTrackerWeb.Controllers
             }
             catch (Exception ex)
             {
-                // Jeśli wystąpił błąd, zwróć odpowiedni kod błędu
                 return new StatusCodeResult(404);
             }
         }
