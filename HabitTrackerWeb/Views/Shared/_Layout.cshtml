@@ -20,16 +20,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" >
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="HabitsWeekly">Your habit</a>
+                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="HabitsCurrentWeek">Current week</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="Index">Habit List</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="ViewSetting" asp-action="Update">Change view options</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="ShowWeeks">History</a>
                         </li>
                     </ul>
                 </div>

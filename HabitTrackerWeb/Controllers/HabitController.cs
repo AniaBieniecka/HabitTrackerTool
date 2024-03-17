@@ -1,7 +1,9 @@
 using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -28,25 +30,26 @@ namespace HabitTrackerWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Habit obj)
+        public IActionResult Create(Habit habit)
         {
             DateTime now = DateTime.Now;
-            DateOnly Today = DateOnly.FromDateTime(now);
-            DayOfWeek WeekDayToday = Today.DayOfWeek;
-
-            DateOnly startOfWeek = Today.AddDays(-(int)Today.DayOfWeek); // - Monday date
+            DateOnly today = DateOnly.FromDateTime(now);
+            // to the loopDate at first we assign Monday date;
+            DateOnly loopDate = today.AddDays(-(int)today.DayOfWeek); 
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Habit.Add(obj);
+                habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                habit.Year = now.Year;
+                _unitOfWork.Habit.Add(habit);
                 _unitOfWork.Save();
 
                 for (int i = 0; i < 7; i++)
                 {
                     HabitRealization habitDay = new HabitRealization();
-                    habitDay.Date = startOfWeek;
-                    startOfWeek = startOfWeek.AddDays(1);
-                    habitDay.HabitId = obj.Id;
+                    habitDay.Date = loopDate;
+                    loopDate = loopDate.AddDays(1);
+                    habitDay.HabitId = habit.Id;
                     _unitOfWork.HabitRealization.Add(habitDay);
                     _unitOfWork.Save();
                 }
@@ -55,6 +58,24 @@ namespace HabitTrackerWeb.Controllers
                 return RedirectToAction("Index");
             }
             return View();
+        }
+
+
+        public IActionResult ShowWeeks()
+        {
+            List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+
+            List<WeekYear> weekYearList = new List<WeekYear>();
+
+            foreach (Habit hab in habits)
+            {
+                var weekYear = new WeekYear { Week = hab.WeekNumber, Year = hab.Year };
+                weekYearList.Add(weekYear);
+            }
+
+            var uniqueWeekYearList = weekYearList.Distinct().ToList();
+
+            return View(uniqueWeekYearList);
         }
     }
 }
