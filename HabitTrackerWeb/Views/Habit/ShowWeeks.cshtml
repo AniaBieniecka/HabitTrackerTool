@@ -1,4 +1,4 @@
-﻿@model List<int>
+﻿@model List<WeekYear>
 <head>
 </head>
 
@@ -12,17 +12,19 @@
             <thead>
                 <tr>
                     <th style="width:30%">Week number</th>
+                    <th style="width:30%">Year</th>
                     <th style="width:20%"></th>
                 </tr>
             </thead>
             <tbody>
 
-                @foreach (var week in Model)
+                @foreach (var weekYear in Model)
                 {
                     <tr>
-                        <td>@week</td>
+                        <td>@weekYear.Week</td>
+                        <td>@weekYear.Year</td>
                         <td>
-                            <a asp-controller="HabitRealization" asp-action="HabitsWeekly" asp-route-id="@week" class="btn btn-outline-primary">
+                            <a asp-controller="HabitRealization" asp-action="HabitsWeekly" asp-route-week="@weekYear.Week" asp-route-year="@weekYear.Year" class="btn btn-outline-primary">
                                 View
                             </a>
                         </td>
