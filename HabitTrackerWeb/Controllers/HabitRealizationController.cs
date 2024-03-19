@@ -36,7 +36,8 @@ namespace HabitTrackerWeb.Controllers
 
             int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            DateTime mondayDate = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek + 1);
+            int daysFromMonday = ((int)today.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+            DateTime mondayDate = DateTime.Now.AddDays(-daysFromMonday);
             int year = DateOnly.FromDateTime(mondayDate).Year;
 
             List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
