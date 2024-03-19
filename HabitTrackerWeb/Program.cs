@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using HabitTracker.DataAccess.Data;
 using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.DataAccess.Repositry;
+using HabitTrackerWeb.Controllers.Services;
+using HabitTrackerWeb.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+builder.Services.AddScoped<IDateService, DateService>();
 
 var app = builder.Build();
 

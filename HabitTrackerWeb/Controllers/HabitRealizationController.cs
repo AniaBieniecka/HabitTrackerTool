@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
+using HabitTrackerWeb.Controllers.Services;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -13,10 +14,12 @@ namespace HabitTrackerWeb.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDateService _dateService;
 
-        public HabitRealizationController(IUnitOfWork unitOfWork)
+        public HabitRealizationController(IUnitOfWork unitOfWork, IDateService dateService)
         {
             _unitOfWork = unitOfWork;
+            _dateService = dateService;
         }
 
         public IActionResult HabitsWeekly(int? week, int? year)
@@ -35,19 +38,18 @@ namespace HabitTrackerWeb.Controllers
         {
 
             int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            int daysFromMonday = ((int)today.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
-            DateTime mondayDate = DateTime.Now.AddDays(-daysFromMonday);
+            
+            DateTime mondayDate = _dateService.LastMonday();
             int year = DateOnly.FromDateTime(mondayDate).Year;
 
             List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
 
-            HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM();
+            HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
+            {
+                habits = habits,
+                habitsHasAnyData = _unitOfWork.Habit.HasAnyData()
+            };
            
-            bool habitsHasAnyData = _unitOfWork.Habit.HasAnyData();
-            habitsCurrentWeekVM.habitsHasAnyData = habitsHasAnyData;
-            habitsCurrentWeekVM.habits = habits;
-
             foreach (Habit hab in habits)
             {
                 hab.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
