@@ -2,7 +2,7 @@
 {
     public interface IDateService
     {
-        public DateTime LastMonday();
+        public DateOnly LastMonday();
 
     }
 }

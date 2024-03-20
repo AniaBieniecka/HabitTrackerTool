@@ -40,8 +40,8 @@ namespace HabitTrackerWeb.Controllers
 
             int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             
-            DateTime mondayDate = _dateService.LastMonday();
-            int year = DateOnly.FromDateTime(mondayDate).Year;
+            DateOnly mondayDate = _dateService.LastMonday();
+            int year = mondayDate.Year;
 
            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
 

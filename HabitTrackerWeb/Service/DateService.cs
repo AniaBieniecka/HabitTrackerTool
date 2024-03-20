@@ -4,13 +4,13 @@ namespace HabitTrackerWeb.Service
 {
     public class DateService: IDateService
     {
-        public DateTime LastMonday()
+        public DateOnly LastMonday()
         {
             DateTime today = DateTime.Today;
             DayOfWeek dayOfWeek = today.DayOfWeek;
             int daysFromMonday = ((int)dayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
             DateTime lastMonday = today.AddDays(-daysFromMonday);
-            return lastMonday;   
+            return DateOnly.FromDateTime(lastMonday);   
         }
     }
 }
