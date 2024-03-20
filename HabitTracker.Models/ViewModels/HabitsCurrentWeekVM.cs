@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabitTracker.Models
+namespace HabitTracker.Models.ViewModels
 {
-    public class HabitsWeeklyVM
+    public class HabitsCurrentWeekVM
     {
         public List<Habit> habits { get; set; }
-        public List<HabitRealization> habitRealizations { get; set; }
+        public bool habitsHasAnyData { get; set; }
     }
 }
