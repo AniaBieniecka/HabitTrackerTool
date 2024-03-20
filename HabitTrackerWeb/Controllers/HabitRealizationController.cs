@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
 using HabitTrackerWeb.Controllers.Services;
+using HabitTracker.Models.ViewModels;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -42,7 +43,7 @@ namespace HabitTrackerWeb.Controllers
             DateTime mondayDate = _dateService.LastMonday();
             int year = DateOnly.FromDateTime(mondayDate).Year;
 
-            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
+           List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
 
             HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
             {

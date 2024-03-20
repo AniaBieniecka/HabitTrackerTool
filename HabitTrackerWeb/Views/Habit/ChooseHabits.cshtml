@@ -1,0 +1,50 @@
+﻿@model ChooseHabitsVM
+
+
+<form asp-action="ChooseHabits" asp-controller="Habit" method="post">
+
+
+    <div class="row">
+
+        @if (Model.habits != null)
+        {
+            @if (Model.habits.Count > 0 || Model.habits != null)
+            {
+                        <div class="col-12 col-sm-6 col-md-6">
+                    <h2 class="mt-5">Choose habits from your previous week</h2>
+                    <div class="mt-5"></div>
+                    @foreach (var habit in Model.habits)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" name="habitNames" value="@habit.Name" />
+                            <label class="form-check-label">
+                                <p class="lead">@habit.Name </p>
+                            </label>
+                            <input type="hidden" name="quantityPerWeek" value="@habit.QuantityPerWeek" />
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+        <div class="col-12 col-sm-6 col-md-6">
+            <h2 class="mt-5">Choose habits from below proposition</h2>
+            <div class="mt-5"></div>
+            @foreach (var habit in Model.habitSuggestions)
+            {
+                <div class="form-check">
+
+                    <input type="checkbox" name="habitNames" value="@habit" />
+
+                    <label class="form-check-label">
+                        <p class="lead">@habit </p>
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary m-4" width="50">Submit all</button>
+
+</form>
+

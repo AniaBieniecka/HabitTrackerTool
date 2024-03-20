@@ -1,5 +1,7 @@
 using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.Models;
+using HabitTracker.Models.ViewModels;
+using HabitTrackerWeb.Controllers.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
@@ -11,10 +13,11 @@ namespace HabitTrackerWeb.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-
-        public HabitController(IUnitOfWork unitOfWork)
+        private readonly IDateService _dateService;
+        public HabitController(IUnitOfWork unitOfWork, IDateService dateService)
         {
             _unitOfWork = unitOfWork;
+            _dateService = dateService;
         }
 
         public IActionResult Index()
@@ -32,15 +35,15 @@ namespace HabitTrackerWeb.Controllers
         [HttpPost]
         public IActionResult Create(Habit habit)
         {
-            DateTime now = DateTime.Now;
-            DateOnly today = DateOnly.FromDateTime(now);
+            DateTime mondayDate = _dateService.LastMonday();
+
             // to the loopDate at first we assign Monday date;
-            DateOnly loopDate = today.AddDays(-(int)today.DayOfWeek); 
+            DateOnly loopDate = DateOnly.FromDateTime(mondayDate);
 
             if (ModelState.IsValid)
             {
                 habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                habit.Year = now.Year;
+                habit.Year = loopDate.Year;
                 _unitOfWork.Habit.Add(habit);
                 _unitOfWork.Save();
 
@@ -77,5 +80,42 @@ namespace HabitTrackerWeb.Controllers
 
             return View(uniqueWeekYearList);
         }
+        public IActionResult ChooseHabits()
+        {
+
+            var habitSuggestion = new HabitSuggestion();
+            var habitSuggestionToDisplay = new List<string>();
+            var indexList = new List<int>();
+
+            Random rnd = new Random();
+            while (indexList.Count < 3)
+            {
+                int index = rnd.Next(habitSuggestion.HabitSuggestions.Count - 1);
+
+                if (!indexList.Contains(index))
+                {                
+                    indexList.Add(index);
+                    habitSuggestionToDisplay.Add(habitSuggestion.HabitSuggestions[index]);
+                }
+            }
+
+            int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) - 1;
+            int year = DateTime.Now.Year;
+
+            ChooseHabitsVM chooseHabitsVM = new ChooseHabitsVM
+            {
+                habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations").ToList(),
+                habitSuggestions = habitSuggestionToDisplay
+            };
+
+            return View(chooseHabitsVM);
+        }
+
+        [HttpPost]
+        public IActionResult ChooseHabits(string[] habitNames, string[] quantityPerWeek)
+        {
+            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+        }
     }
 }
+
