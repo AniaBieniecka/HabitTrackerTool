@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
+using HabitTrackerWeb.Controllers.Services;
+using HabitTracker.Models.ViewModels;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -13,15 +15,17 @@ namespace HabitTrackerWeb.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDateService _dateService;
 
-        public HabitRealizationController(IUnitOfWork unitOfWork)
+        public HabitRealizationController(IUnitOfWork unitOfWork, IDateService dateService)
         {
             _unitOfWork = unitOfWork;
+            _dateService = dateService;
         }
 
         public IActionResult HabitsWeekly(int? week, int? year)
         {
-            List<Habit> habits = _unitOfWork.Habit.GetAll(u=>u.WeekNumber==week&& u.Year==year, includeProperties: "habitRealizations").ToList();
+            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations").ToList();
 
             foreach (Habit hab in habits)
             {
@@ -34,17 +38,25 @@ namespace HabitTrackerWeb.Controllers
         public IActionResult HabitsCurrentWeek()
         {
 
-            int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            int year = DateTime.Now.Year;
+            int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            
+            DateOnly mondayDate = _dateService.LastMonday();
+            int year = mondayDate.Year;
 
-            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations").ToList();
+           List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
 
+            HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
+            {
+                habits = habits,
+                habitsHasAnyData = _unitOfWork.Habit.HasAnyData()
+            };
+           
             foreach (Habit hab in habits)
             {
                 hab.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
             }
 
-            return View(habits);
+            return View(habitsCurrentWeekVM);
         }
 
         [HttpGet]

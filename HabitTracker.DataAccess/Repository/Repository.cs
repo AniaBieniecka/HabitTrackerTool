@@ -78,6 +78,14 @@ namespace HabitTracker.DataAccess.Repository
         public void RemoveRange(IEnumerable<T> entity)
         {
             dbSet.RemoveRange(entity);
+
+        }
+
+        public bool HasAnyData()
+        {
+            bool hasAnyData = dbSet.Any();
+            return hasAnyData;
+            
         }
     }
 }

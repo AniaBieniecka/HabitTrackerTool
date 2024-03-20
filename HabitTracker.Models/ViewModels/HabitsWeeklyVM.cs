@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabitTracker.Models
+namespace HabitTracker.Models.ViewModels
 {
     public class HabitsWeeklyVM
     {
