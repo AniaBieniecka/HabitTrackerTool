@@ -2,6 +2,7 @@ using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.Models;
 using HabitTracker.Models.ViewModels;
 using HabitTrackerWeb.Controllers.Services;
+using HabitTrackerWeb.Service;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
@@ -35,10 +36,10 @@ namespace HabitTrackerWeb.Controllers
         [HttpPost]
         public IActionResult Create(Habit habit)
         {
-            DateTime mondayDate = _dateService.LastMonday();
+            DateOnly mondayDate = _dateService.LastMonday();
 
             // to the loopDate at first we assign Monday date;
-            DateOnly loopDate = DateOnly.FromDateTime(mondayDate);
+            DateOnly loopDate = mondayDate;
 
             if (ModelState.IsValid)
             {
@@ -114,8 +115,8 @@ namespace HabitTrackerWeb.Controllers
         [HttpPost]
         public IActionResult ChooseHabits(string[] habitNames, int[] quantityPerWeek)
         {
-            DateTime mondayDate = _dateService.LastMonday();
-            DateOnly loopDate = DateOnly.FromDateTime(mondayDate);
+            DateOnly mondayDate = _dateService.LastMonday();
+            DateOnly loopDate = mondayDate;
             int index = 0;
 
             foreach (var habitName in habitNames)
@@ -138,6 +139,46 @@ namespace HabitTrackerWeb.Controllers
                     _unitOfWork.HabitRealization.Add(habitDay);
                     _unitOfWork.Save();
                 }
+            }
+            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+        }
+
+        public IActionResult CreateHabitsFromPreviousWeek()
+        {
+            int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int weekPrevious = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now.AddDays(-7), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            DateOnly lastMondayDate = _dateService.LastMonday();
+            DateOnly mondayDateFromPreviousWeek = lastMondayDate.AddDays(-7);
+            int year = mondayDateFromPreviousWeek.Year;
+            DateOnly loopDate;
+
+            List<Habit> habitsPreviousWeek = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekPrevious && u.Year == year, includeProperties: "habitRealizations").ToList();
+
+            if (habitsPreviousWeek.Count > 0)
+            {
+                foreach (var habitPreviousWeek in habitsPreviousWeek)
+                {
+                    Habit habit = new Habit();
+                    habit.Name = habitPreviousWeek.Name;
+                    habit.QuantityPerWeek = habitPreviousWeek.QuantityPerWeek;
+                    habit.WeekNumber = weekCurrent;
+                    loopDate = lastMondayDate;
+                    habit.Year = loopDate.Year;
+                    _unitOfWork.Habit.Add(habit);
+                    _unitOfWork.Save();
+
+                    for (int i = 0; i < 7; i++)
+                    {
+                        HabitRealization habitDay = new HabitRealization();
+                        habitDay.Date = loopDate;
+                        loopDate = loopDate.AddDays(1);
+                        habitDay.HabitId = habit.Id;
+                        _unitOfWork.HabitRealization.Add(habitDay);
+                        _unitOfWork.Save();
+                    }
+                }
+                return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
             }
             return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
         }
