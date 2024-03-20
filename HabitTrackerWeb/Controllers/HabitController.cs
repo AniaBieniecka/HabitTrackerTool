@@ -93,7 +93,7 @@ namespace HabitTrackerWeb.Controllers
                 int index = rnd.Next(habitSuggestion.HabitSuggestions.Count - 1);
 
                 if (!indexList.Contains(index))
-                {                
+                {
                     indexList.Add(index);
                     habitSuggestionToDisplay.Add(habitSuggestion.HabitSuggestions[index]);
                 }
@@ -112,8 +112,33 @@ namespace HabitTrackerWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChooseHabits(string[] habitNames, string[] quantityPerWeek)
+        public IActionResult ChooseHabits(string[] habitNames, int[] quantityPerWeek)
         {
+            DateTime mondayDate = _dateService.LastMonday();
+            DateOnly loopDate = DateOnly.FromDateTime(mondayDate);
+            int index = 0;
+
+            foreach (var habitName in habitNames)
+            {
+                Habit habit = new Habit();
+                habit.Name = habitName;
+                habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                habit.QuantityPerWeek = quantityPerWeek[index];
+                index++;
+                habit.Year = loopDate.Year;
+                _unitOfWork.Habit.Add(habit);
+                _unitOfWork.Save();
+
+                for (int i = 0; i < 7; i++)
+                {
+                    HabitRealization habitDay = new HabitRealization();
+                    habitDay.Date = loopDate;
+                    loopDate = loopDate.AddDays(1);
+                    habitDay.HabitId = habit.Id;
+                    _unitOfWork.HabitRealization.Add(habitDay);
+                    _unitOfWork.Save();
+                }
+            }
             return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
         }
     }
