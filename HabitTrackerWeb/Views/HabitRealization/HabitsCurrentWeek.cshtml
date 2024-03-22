@@ -44,6 +44,15 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td></td>
+                    @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
+                    {
+                        <td>@habitRealization.Date</td>
+                    }
+                    <td></td>
+                    <td></td>
+                </tr>
 
                 @foreach (var habit in Model.habits)
                 {
