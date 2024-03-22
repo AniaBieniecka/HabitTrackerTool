@@ -18,6 +18,7 @@
     </a>
     <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
         Choose habits from the list
+        <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
     </a>
     @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
     {
