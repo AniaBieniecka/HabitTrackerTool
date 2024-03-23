@@ -1,9 +1,17 @@
 ﻿@model Habit
 
-<h2 class="py-2">Create Habit</h2>
+@if (Model.Id == 0)
+{
+    <h2 class="py-2">Create habit</h2>
+}
+else
+{
+    <h2 class="py-2">Update habit</h2>
+}
+
 
 <form method="post">
-
+    <input asp-for="@Model.Id" hidden />
     <div class="form-floating m-2">
         <input asp-for="Name" class="form-control"></input>
         <label asp-for="Name" class="text-dark"></label>
@@ -14,7 +22,7 @@
         <label asp-for="QuantityPerWeek" class="text-dark"></label>
         <span asp-validation-for="QuantityPerWeek" class="text-primary"></span>
     </div>
-    <button type="submit" class="btn btn-primary m-2" width="50">Create</button>
+    <button type="submit" class="btn btn-primary m-2" width="50">@(Model.Id != 0 ? "Update" : "Create")</button>
     <a asp-controller="Habit" asp-action="Index" class="btn btn-primary">
         Back to List
     </a>

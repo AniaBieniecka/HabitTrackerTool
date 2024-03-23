@@ -28,13 +28,18 @@ namespace HabitTrackerWeb.Controllers
         }
 
 
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            Habit habit = new Habit();
+            if (id != null)
+            {
+                habit = _unitOfWork.Habit.Get(u => u.Id == id);
+            }
+            return View(habit);
         }
 
         [HttpPost]
-        public IActionResult Create(Habit habit)
+        public IActionResult Upsert(Habit habit)
         {
             DateOnly mondayDate = _dateService.LastMonday();
 
@@ -43,23 +48,34 @@ namespace HabitTrackerWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                habit.Year = loopDate.Year;
-                _unitOfWork.Habit.Add(habit);
-                _unitOfWork.Save();
-
-                for (int i = 0; i < 7; i++)
+                if (habit.Id == 0)
                 {
-                    HabitRealization habitDay = new HabitRealization();
-                    habitDay.Date = loopDate;
-                    loopDate = loopDate.AddDays(1);
-                    habitDay.HabitId = habit.Id;
-                    _unitOfWork.HabitRealization.Add(habitDay);
+                    habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                    habit.Year = loopDate.Year;
+                    _unitOfWork.Habit.Add(habit);
+                    _unitOfWork.Save();
+                    for (int i = 0; i < 7; i++)
+                    {
+                        HabitRealization habitDay = new HabitRealization();
+                        habitDay.Date = loopDate;
+                        loopDate = loopDate.AddDays(1);
+                        habitDay.HabitId = habit.Id;
+                        _unitOfWork.HabitRealization.Add(habitDay);
+                        _unitOfWork.Save();
+                    }
+                }
+
+                else
+                {
+                    Habit habitFromDB = _unitOfWork.Habit.Get(u => u.Id == habit.Id);
+                    habit.WeekNumber = habitFromDB.WeekNumber;
+                    habit.Year = habitFromDB.Year;
+                    _unitOfWork.Habit.Update(habit);
                     _unitOfWork.Save();
                 }
 
-                TempData["success"] = "Habit created successfully";
-                return RedirectToAction("Index");
+                return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+
             }
             return View();
         }
