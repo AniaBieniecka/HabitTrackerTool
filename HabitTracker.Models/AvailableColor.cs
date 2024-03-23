@@ -29,8 +29,10 @@ namespace HabitTracker.Models
             "#FF6347",
             "red",
             "#FFE400",
+            "#32CD32",
             "#006400",
             "#483D8B",
+            "#708090",
             "black"
         };
         }

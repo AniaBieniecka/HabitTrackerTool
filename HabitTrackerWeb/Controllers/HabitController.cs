@@ -81,7 +81,7 @@ namespace HabitTrackerWeb.Controllers
 
             return View(uniqueWeekYearList);
         }
-        public IActionResult ChooseHabits()
+        public IActionResult ChooseHabits(int? habitsCount)
         {
 
             var habitSuggestion = new HabitSuggestion();
@@ -100,12 +100,20 @@ namespace HabitTrackerWeb.Controllers
                 }
             }
 
-            int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) - 1;
-            int year = DateTime.Now.Year;
+            int previousWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear((DateTime.Now).AddDays(-7), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int previousYear = (DateTime.Now).AddDays(-7).Year;
+            List<Habit> previousWeekHabit = new List<Habit>();
+
+            if (habitsCount == 0)
+            {
+
+                previousWeekHabit = _unitOfWork.Habit.GetAll(u => u.WeekNumber == previousWeek && u.Year == previousYear, includeProperties: "habitRealizations").ToList();
+
+            }
 
             ChooseHabitsVM chooseHabitsVM = new ChooseHabitsVM
             {
-                habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations").ToList(),
+                habits = previousWeekHabit,
                 habitSuggestions = habitSuggestionToDisplay
             };
 
