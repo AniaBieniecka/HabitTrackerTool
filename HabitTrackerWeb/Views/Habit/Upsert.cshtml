@@ -12,6 +12,7 @@ else
 
 <form method="post">
     <input asp-for="@Model.Id" hidden />
+    <div class="col-lg-6">
     <div class="form-floating m-2">
         <input asp-for="Name" class="form-control"></input>
         <label asp-for="Name" class="text-dark"></label>
@@ -26,6 +27,7 @@ else
     <a asp-controller="HabitRealization" asp-action="HabitsCurrentWeek" class="btn btn-primary">
         Back to List
     </a>
+    </div>
 </form>
 
 @section Scripts {
