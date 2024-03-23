@@ -206,6 +206,35 @@ namespace HabitTrackerWeb.Controllers
             }
             return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
         }
+
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            Habit? habitFromDB = _unitOfWork.Habit.Get(u => u.Id == id);
+            if (habitFromDB == null)
+            {
+                return NotFound();
+            }
+            return View(habitFromDB);
+        }
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeletePOST(int? id)
+        {
+            Habit? habitFromDB = _unitOfWork.Habit.Get(u => u.Id == id);
+            if (habitFromDB == null)
+            {
+                return NotFound();
+            }
+
+            _unitOfWork.Habit.Remove(habitFromDB);
+            _unitOfWork.Save();
+            TempData["success"] = "Category deleted successfully";
+            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+        }
     }
 }
 
