@@ -1,4 +1,4 @@
-namespace HabitTracker.Models
+namespace HabitTracker.Models.ViewModels
 {
     public class ErrorViewModel
     {
