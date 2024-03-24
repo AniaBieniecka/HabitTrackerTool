@@ -22,7 +22,8 @@ namespace HabitTracker.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ViewSetting>().HasData(new ViewSetting { Id = 1, Color = "00CED1", IconPartiallyDone = "bi bi-check-square", IconDone = "bi bi-check-square-fill" });
+            modelBuilder.Entity<ViewSetting>().HasData(new ViewSetting { Id = 1, Color = "00CED1", IconPartiallyDone = "bi bi-check-square", IconDone = "bi bi-check-square-fill" }); 
+            modelBuilder.Entity<Score>().HasData(new Score { Id = 1, ScoreValue = 0 }); 
 
         }
 

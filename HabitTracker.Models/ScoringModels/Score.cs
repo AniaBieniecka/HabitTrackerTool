@@ -17,10 +17,7 @@ namespace HabitTracker.Models.ScoringModels
 
         [DisplayName("Score value")]
         public int ScoreValue { get; set; }
-
         public int LevelId { get; set; }
-        [ForeignKey("Id")]
-        public Level level{ get; set; }
         public Score()
         {
             ScoreValue = 0;

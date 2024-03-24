@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HabitTracker.Models.ScoringModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,7 @@ namespace HabitTracker.Models.ViewModels
     {
         public List<Habit> habits { get; set; }
         public bool habitsHasAnyData { get; set; }
+        public Score score { get; set; }
+
     }
 }

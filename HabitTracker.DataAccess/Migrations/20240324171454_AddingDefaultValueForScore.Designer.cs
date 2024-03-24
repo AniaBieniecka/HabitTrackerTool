@@ -4,6 +4,7 @@ using HabitTracker.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HabitTracker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240324171454_AddingDefaultValueForScore")]
+    partial class AddingDefaultValueForScore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,13 +76,26 @@ namespace HabitTracker.DataAccess.Migrations
                     b.ToTable("HabitRealizations");
                 });
 
-            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Level", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MinimumScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Level");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
@@ -95,7 +111,7 @@ namespace HabitTracker.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            LevelId = 0,
+                            LevelId = 1,
                             ScoreValue = 0
                         });
                 });
@@ -143,6 +159,17 @@ namespace HabitTracker.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("habit");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.HasOne("HabitTracker.Models.ScoringModels.Level", "level")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("level");
                 });
 
             modelBuilder.Entity("HabitTracker.Models.Habit", b =>

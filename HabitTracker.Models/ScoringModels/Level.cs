@@ -13,12 +13,14 @@ namespace HabitTracker.Models.ScoringModels
 {
     public class Level
     {
+        [NotMapped]
         public int Id { get; set; }
+        [NotMapped]
         public int MinimumScore { get; set; }
 
         public Level(int id, int minimumScore)
         {
-            Id = id;    
+            Id = id;
             MinimumScore = minimumScore;
         }
 
