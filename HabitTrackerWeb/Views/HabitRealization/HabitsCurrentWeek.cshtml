@@ -5,27 +5,41 @@
 </head>
 
 <body>
-    @if (Model.habits.Count > 0)
-    {
-        <h2 class="py-2 m-2">Your habits in the current week </h2>
-    }
-    @if (Model.habits.Count == 0)
-    {
-        <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
-    }
-    <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary  m-2">
-        Create New Habit
-    </a>
-    <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
-        Choose habits from the list
-        <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
-    </a>
-    @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
-    {
-        <a asp-controller="Habit" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary m-2">
-            Would you like to continue habits from your previous week?
-        </a>
-    }
+    <div class="row">
+        <div class="col-8">
+            @if (Model.habits.Count > 0)
+            {
+                <h2 class="py-2 m-2">Your habits in the current week </h2>
+            }
+            @if (Model.habits.Count == 0)
+            {
+                <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
+            }
+            <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary  m-2">
+                Create New Habit
+            </a>
+            <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
+                Choose habits from the list
+                <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
+            </a>
+            @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
+            {
+                <a asp-controller="Habit" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary m-2">
+                    Would you like to continue habits from your previous week?
+                </a>
+            }
+        </div>
+        <div class="col-4">
+            <div class="float-end card mb-3 " style="max-width: 20rem;">
+                <div class="card-header">Your score:</div>
+                <div class="card-body">
+                    <h4 class="card-title">@Model.score.ScoreValue points</h4>
+                    <p class="card-text"></p>
+                </div>
+            </div>
+    </div>
+   
+
     @if (Model.habits.Count > 0)
     {
         <table class="table table-bordered container-lg  my-3" style="text-align: center">
@@ -101,12 +115,7 @@
     }
 
 
-    <div class="float-end card bg-light mb-3 " style="max-width: 20rem;">
-        <div class="card-header">Your score:</div>
-        <div class="card-body">
-            <h4 class="card-title">@Model.score.ScoreValue points</h4>
-            <p class="card-text"></p>
-        </div>
+
 
 </body>
 
