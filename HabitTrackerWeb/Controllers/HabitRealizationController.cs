@@ -39,18 +39,19 @@ namespace HabitTrackerWeb.Controllers
         {
 
             int weekCurrent = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            
+
             DateOnly mondayDate = _dateService.LastMonday();
             int year = mondayDate.Year;
 
-           List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
+            List<Habit> habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habitRealizations").ToList();
 
             HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
             {
                 habits = habits,
-                habitsHasAnyData = _unitOfWork.Habit.HasAnyData()
+                habitsHasAnyData = _unitOfWork.Habit.HasAnyData(),
+                score = _unitOfWork.Score.Get(u=> u.Id == 1)
             };
-           
+
             foreach (Habit hab in habits)
             {
                 hab.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
@@ -64,6 +65,8 @@ namespace HabitTrackerWeb.Controllers
         {
             try
             {
+                var score = _unitOfWork.Score.Get(u => u.Id == 1);
+                var scoreValue = score.ScoreValue;
                 var item = _unitOfWork.HabitRealization.Get(u => u.Id == id);
                 if (item == null)
                 {
@@ -72,14 +75,22 @@ namespace HabitTrackerWeb.Controllers
 
                 if (item.IfExecuted == 0)
                 {
+                    scoreValue += 10;
                     item.IfExecuted = 1;
                 }
                 else if (item.IfExecuted == 1)
                 {
+                    scoreValue -= 5;
                     item.IfExecuted = 2;
                 }
-                else item.IfExecuted = 0;
+                else
+                {
+                    item.IfExecuted = 0;
+                    scoreValue -= 5;
+                }
+                score.ScoreValue = scoreValue;
 
+                _unitOfWork.Score.Update(score);
                 _unitOfWork.HabitRealization.Update(item);
                 _unitOfWork.Save();
 
