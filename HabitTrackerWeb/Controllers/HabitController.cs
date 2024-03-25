@@ -116,28 +116,11 @@ namespace HabitTrackerWeb.Controllers
                 }
             }
 
-            int previousWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear((DateTime.Now).AddDays(-7), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            int previousYear = (DateTime.Now).AddDays(-7).Year;
-            List<Habit> previousWeekHabit = new List<Habit>();
-
-            if (habitsCount == 0)
-            {
-
-                previousWeekHabit = _unitOfWork.Habit.GetAll(u => u.WeekNumber == previousWeek && u.Year == previousYear, includeProperties: "habitRealizations").ToList();
-
-            }
-
-            ChooseHabitsVM chooseHabitsVM = new ChooseHabitsVM
-            {
-                habits = previousWeekHabit,
-                habitSuggestions = habitSuggestionToDisplay
-            };
-
-            return View(chooseHabitsVM);
+            return View(habitSuggestionToDisplay);
         }
 
         [HttpPost]
-        public IActionResult ChooseHabits(string[] habitNames, int[] quantityPerWeek)
+        public IActionResult ChooseHabits(string[] habitNames)
         {
             DateOnly mondayDate = _dateService.LastMonday();
             DateOnly loopDate = mondayDate;
@@ -148,7 +131,7 @@ namespace HabitTrackerWeb.Controllers
                 Habit habit = new Habit();
                 habit.Name = habitName;
                 habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                habit.QuantityPerWeek = quantityPerWeek[index];
+                habit.QuantityPerWeek = 7;
                 index++;
                 habit.Year = loopDate.Year;
                 _unitOfWork.Habit.Add(habit);
