@@ -14,10 +14,10 @@
         <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
     }
     <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary  m-2">
-        Create New Habit
+        Create a new habit
     </a>
     <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
-        Choose habit
+        Choose a habit
         <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
     </a>
     @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)

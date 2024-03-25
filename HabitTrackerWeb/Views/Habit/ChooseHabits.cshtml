@@ -3,12 +3,12 @@
 <form asp-action="ChooseHabits" asp-controller="Habit" method="post">
 
     <div class="row">
-        <h2 class="m-3">
+        <h2 class="my-3">
             Choose a habit from random suggestions below
         </h2>
         @foreach (var habit in Model)
         {
-            <div class="form-check m-1">
+            <div class="form-check my-1">
 
                 <input type="checkbox" name="habitNames" value="@habit" />
 
@@ -20,7 +20,7 @@
 
     </div>
 
-    <button type="submit" class="btn btn-primary m-4" width="50">Submit</button>
+    <button type="submit" class="btn btn-primary my-3" width="50">Submit</button>
     <a asp-controller="HabitRealization" asp-action="HabitsCurrentWeek" class="btn btn-primary">
         Back to List
     </a>

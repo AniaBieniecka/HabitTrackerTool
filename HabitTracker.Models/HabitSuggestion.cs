@@ -23,12 +23,12 @@ namespace HabitTracker.Models
         {
 
             "Make your bed",
-            "Express gratitude for 3 things in your life",
+            "Name 3 things in your life that you are grateful for",
             "Clean for 15 minute",
             "Write a journal",
             "Take a walk",
             "Make something nice for someone",
-            "Enjoy a pleasant moment carefully",
+            "Practise mindfulness",
             "Don't use your phone before sleep",
             "Don't eat sugar",
             "Get enough sleep",
