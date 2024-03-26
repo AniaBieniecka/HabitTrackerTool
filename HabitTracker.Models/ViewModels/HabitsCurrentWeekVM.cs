@@ -12,6 +12,7 @@ namespace HabitTracker.Models.ViewModels
         public List<Habit> habits { get; set; }
         public bool habitsHasAnyData { get; set; }
         public Score score { get; set; }
+        public int numberOfWeeks { get; set; }
 
     }
 }

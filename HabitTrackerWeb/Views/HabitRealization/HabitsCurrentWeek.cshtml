@@ -31,88 +31,97 @@
         </div>
         <div class="col-4">
             <div class="float-end card mb-3 " style="max-width: 20rem;">
-                <div class="card-header">Your score:</div>
-                <div class="card-body">
-                    <h4 class="card-title">@Model.score.ScoreValue points</h4>
-                    <p class="card-text"></p>
+                <div class="card-header d-flex justify-content-center">Your score</div>
+                <div class="card-body d-flex justify-content-center">
+                    <h5 class="card-title">
+                        <span class="mx-1">
+                            Week: @Model.numberOfWeeks    
+                            </span>
+                        <span id="level" class="mx-1">
+                            Level: @Model.score.LevelId
+                        </span>
+                        <span id="score" class="mx-1">
+                            Points: @Model.score.ScoreValue
+                        </span>
+                    </span>
                 </div>
             </div>
-    </div>
-   
+        </div>
 
-    @if (Model.habits.Count > 0)
-    {
-        <table class="table table-bordered container-lg  my-3" style="text-align: center">
-            <thead>
-                <tr>
-                    <th style="width:20%">Habit Name</th>
-                    <th style="width:8%">Monday</th>
-                    <th style="width:8%">Tuesday</th>
-                    <th style="width:8%">Wednesday</th>
-                    <th style="width:8%">Thursday</th>
-                    <th style="width:8%">Friday</th>
-                    <th style="width:8%">Saturday</th>
-                    <th style="width:8%">Sunday</th>
-                    <th style="width:6%">Your goal</th>
-                    <th style="width:12%">Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
-                    {
-                        <td>@habitRealization.Date</td>
-                    }
-                    <td></td>
-                    <td></td>
-                </tr>
 
-                @foreach (var habit in Model.habits)
-                {
+        @if (Model.habits.Count > 0)
+        {
+            <table class="table table-bordered container-lg  my-3" style="text-align: center">
+                <thead>
                     <tr>
-                        <td>@habit.Name</td>
-
-                        @foreach (var obj in habit.habitRealizations)
-                        {
-                            <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
-
-                                <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
-
-                                    @if (obj.IfExecuted == 1)
-                                    {
-                                        <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
-                                    }
-                                    else if (obj.IfExecuted == 2)
-                                    {
-                                        <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
-
-                                    }
-
-                                </span>
-
-                                <input type="hidden" id="obj.Id" value="@obj.Id" />
-
-                            </td>
-
-                        }
-
-                        <td>@habit.QuantityPerWeek</td>
-                        <td>
-                            <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
-                                Edit
-                            </a>
-                            <a asp-controller="Habit" asp-action="Delete" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
-                                Delete
-                            </a>
-                        </td>
+                        <th style="width:20%">Habit Name</th>
+                        <th style="width:8%">Monday</th>
+                        <th style="width:8%">Tuesday</th>
+                        <th style="width:8%">Wednesday</th>
+                        <th style="width:8%">Thursday</th>
+                        <th style="width:8%">Friday</th>
+                        <th style="width:8%">Saturday</th>
+                        <th style="width:8%">Sunday</th>
+                        <th style="width:6%">Your goal</th>
+                        <th style="width:12%">Edit</th>
                     </tr>
-                }
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
+                        {
+                            <td>@habitRealization.Date</td>
+                        }
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    @foreach (var habit in Model.habits)
+                    {
+                        <tr>
+                            <td>@habit.Name</td>
+
+                            @foreach (var obj in habit.habitRealizations)
+                            {
+                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
+
+                                    <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
+
+                                        @if (obj.IfExecuted == 1)
+                                        {
+                                            <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                        }
+                                        else if (obj.IfExecuted == 2)
+                                        {
+                                            <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+
+                                        }
+
+                                    </span>
+
+                                    <input type="hidden" id="obj.Id" value="@obj.Id" />
+
+                                </td>
+
+                            }
+
+                            <td>@habit.QuantityPerWeek</td>
+                            <td>
+                                <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
+                                    Edit
+                                </a>
+                                <a asp-controller="Habit" asp-action="Delete" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
 
 
-            </tbody>
-        </table>
-    }
+                </tbody>
+            </table>
+        }
 
 
 
@@ -129,7 +138,6 @@
             url: '@Url.Action("UpdateIfExecuted", "HabitRealization")',
             data: { id: itemId },
             success: function (result) {
-                // Jeśli operacja się powiodła, możesz wykonać dodatkowe akcje
                 console.log("IfExecuted updated successfully");
 
                 if (result.ifExecuted === 1) {
@@ -139,6 +147,11 @@
 
                 } else
                     $("#icon-" + itemId).html('');
+
+                var scoreDiv = document.getElementById("score");
+                scoreDiv.innerText = "Points: " +result.scoreValue.toString();
+                var levelDiv = document.getElementById("level");
+                levelDiv.innerText = "Level: " + result.level.toString();
 
             },
             error: function (xhr, status, error) {

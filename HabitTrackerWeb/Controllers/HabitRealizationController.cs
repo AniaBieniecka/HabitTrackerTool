@@ -8,6 +8,8 @@ using System.Globalization;
 using System.Net;
 using HabitTrackerWeb.Controllers.Services;
 using HabitTracker.Models.ViewModels;
+using HabitTracker.Models.ScoringModels;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -49,7 +51,8 @@ namespace HabitTrackerWeb.Controllers
             {
                 habits = habits,
                 habitsHasAnyData = _unitOfWork.Habit.HasAnyData(),
-                score = _unitOfWork.Score.Get(u=> u.Id == 1)
+                score = _unitOfWork.Score.Get(u=> u.Id == 1),
+                numberOfWeeks = HowManyWeeks(),
             };
 
             foreach (Habit hab in habits)
@@ -90,16 +93,57 @@ namespace HabitTrackerWeb.Controllers
                 }
                 score.ScoreValue = scoreValue;
 
+                score.LevelId = SetLevel(score.LevelId, scoreValue);
+
                 _unitOfWork.Score.Update(score);
                 _unitOfWork.HabitRealization.Update(item);
                 _unitOfWork.Save();
 
-                return Json(new { ifExecuted = item.IfExecuted });
+                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId });
             }
             catch (Exception ex)
             {
                 return new StatusCodeResult(404);
             }
         }
+
+
+        //supporting methods
+        private int SetLevel(int levelId, int scoreValue)
+        {
+            var level = new Level(levelId);
+            int minimumNextLevelScore = 0;
+            minimumNextLevelScore = levelId * 500;
+
+            if (scoreValue >= level.MinimumScoreNextLevel)
+            {
+                levelId++;
+            }
+
+            if (scoreValue < level.MinimumScoreNextLevel - 500 && levelId != 1)
+            {
+                levelId--;
+            }
+
+            return levelId;
+        }
+
+        private int HowManyWeeks() {
+
+            //counting how many weeks are in DB
+
+            List<Habit> allHabits = _unitOfWork.Habit.GetAll().ToList();
+            List<int> weekList = new List<int>();
+
+            foreach (Habit hab in allHabits)
+            {
+                weekList.Add(hab.WeekNumber);
+            }
+
+            var uniqueWeekList = weekList.Distinct().ToList();
+
+            return uniqueWeekList.Count();
+        }
+
     }
 }
