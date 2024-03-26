@@ -51,7 +51,7 @@ namespace HabitTrackerWeb.Controllers
             {
                 habits = habits,
                 habitsHasAnyData = _unitOfWork.Habit.HasAnyData(),
-                score = _unitOfWork.Score.Get(u=> u.Id == 1),
+                score = _unitOfWork.Score.Get(u => u.Id == 1),
                 numberOfWeeks = HowManyWeeks(),
             };
 
@@ -71,6 +71,7 @@ namespace HabitTrackerWeb.Controllers
                 var score = _unitOfWork.Score.Get(u => u.Id == 1);
                 var scoreValue = score.ScoreValue;
                 var item = _unitOfWork.HabitRealization.Get(u => u.Id == id);
+
                 if (item == null)
                 {
                     return NotFound();
@@ -80,6 +81,7 @@ namespace HabitTrackerWeb.Controllers
                 {
                     scoreValue += 10;
                     item.IfExecuted = 1;
+
                 }
                 else if (item.IfExecuted == 1)
                 {
@@ -91,12 +93,28 @@ namespace HabitTrackerWeb.Controllers
                     item.IfExecuted = 0;
                     scoreValue -= 5;
                 }
+
+                _unitOfWork.HabitRealization.Update(item);
+                _unitOfWork.Save();
+
+                var isUpdated = UpdateFulfillmentStatus(item.HabitId);
+                var habit = _unitOfWork.Habit.Get(u => u.Id == item.HabitId);
+
+                if (isUpdated)
+                {
+                    if(habit.IsWeeklyCommitmentFulfilled == true)
+                    {
+                    scoreValue += 50;
+                    }
+                    else scoreValue -= 50;
+                }
+
                 score.ScoreValue = scoreValue;
 
                 score.LevelId = SetLevel(score.LevelId, scoreValue);
 
                 _unitOfWork.Score.Update(score);
-                _unitOfWork.HabitRealization.Update(item);
+
                 _unitOfWork.Save();
 
                 return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId });
@@ -128,7 +146,8 @@ namespace HabitTrackerWeb.Controllers
             return levelId;
         }
 
-        private int HowManyWeeks() {
+        private int HowManyWeeks()
+        {
 
             //counting how many weeks are in DB
 
@@ -145,5 +164,35 @@ namespace HabitTrackerWeb.Controllers
             return uniqueWeekList.Count();
         }
 
+        private bool UpdateFulfillmentStatus(int habitId)
+        {
+            var habit = _unitOfWork.Habit.Get(u => u.Id == habitId);
+            var habitsRealization = _unitOfWork.HabitRealization.GetAll(u => u.HabitId == habitId);
+            int quantityOfExecuted = 0;
+            bool wasUpdated = false;
+
+            foreach (var obj in habitsRealization)
+            {
+                if (obj.IfExecuted == 1)
+                    quantityOfExecuted++;
+            }
+
+            var isFulfilled = false;
+            if (quantityOfExecuted >= habit.QuantityPerWeek)
+            {
+                isFulfilled = true;
+            }
+            else isFulfilled = false;
+
+            if (habit.IsWeeklyCommitmentFulfilled != isFulfilled)
+            {
+                habit.IsWeeklyCommitmentFulfilled = isFulfilled;
+                _unitOfWork.Habit.Update(habit);
+                _unitOfWork.Save();
+                wasUpdated = true;
+            }
+
+            return wasUpdated;
+        }
     }
 }

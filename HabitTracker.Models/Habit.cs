@@ -26,8 +26,10 @@ namespace HabitTracker.Models
         [DisplayName("Week number")]
         public int WeekNumber { get; set; }
         public int Year { get; set; }
+      public bool IsWeeklyCommitmentFulfilled { get; set; }
         public Habit() {
             QuantityPerWeek = 7;
+            IsWeeklyCommitmentFulfilled = false;
         }
 
         [ValidateNever]
