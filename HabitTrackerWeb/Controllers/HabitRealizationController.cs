@@ -97,12 +97,12 @@ namespace HabitTrackerWeb.Controllers
                 _unitOfWork.HabitRealization.Update(item);
                 _unitOfWork.Save();
 
-                var isCommitmentStatusUpdated = UpdateCommitmentStatus(item.HabitId);
+                var isGoalStatusUpdated = UpdateGoalStatus(item.HabitId);
                 var habit = _unitOfWork.Habit.Get(u => u.Id == item.HabitId);
 
-                if (isCommitmentStatusUpdated)
+                if (isGoalStatusUpdated)
                 {
-                    if(habit.IsWeeklyCommitmentFulfilled == true)
+                    if(habit.IsWeeklyGoalAchieved == true)
                     {
                     scoreValue += 50;
                     }
@@ -117,7 +117,7 @@ namespace HabitTrackerWeb.Controllers
 
                 _unitOfWork.Save();
 
-                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId, commitmentStatus = habit.IsWeeklyCommitmentFulfilled, isCommitmentUpdated = isCommitmentStatusUpdated});
+                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId, weeklyGoalStatus = habit.IsWeeklyGoalAchieved, isGoalStatusUpdated = isGoalStatusUpdated});
             }
             catch (Exception ex)
             {
@@ -164,7 +164,7 @@ namespace HabitTrackerWeb.Controllers
             return uniqueWeekList.Count();
         }
 
-        private bool UpdateCommitmentStatus(int habitId)
+        private bool UpdateGoalStatus(int habitId)
         {
             var habit = _unitOfWork.Habit.Get(u => u.Id == habitId);
             var habitsRealization = _unitOfWork.HabitRealization.GetAll(u => u.HabitId == habitId);
@@ -178,15 +178,15 @@ namespace HabitTrackerWeb.Controllers
             }
 
             var isFulfilled = false;
-            if (quantityOfExecuted >= habit.QuantityPerWeek)
+            if (quantityOfExecuted >= habit.WeeklyGoal)
             {
                 isFulfilled = true;
             }
             else isFulfilled = false;
 
-            if (habit.IsWeeklyCommitmentFulfilled != isFulfilled)
+            if (habit.IsWeeklyGoalAchieved != isFulfilled)
             {
-                habit.IsWeeklyCommitmentFulfilled = isFulfilled;
+                habit.IsWeeklyGoalAchieved = isFulfilled;
                 _unitOfWork.Habit.Update(habit);
                 _unitOfWork.Save();
                 wasUpdated = true;

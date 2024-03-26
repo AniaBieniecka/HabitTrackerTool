@@ -106,16 +106,16 @@
 
                             }
 
-                            @if (habit.IsWeeklyCommitmentFulfilled)
+                            @if (habit.IsWeeklyGoalAchieved)
                             {
                                 <td id="@habit.Id" style="background-color:@habit.ViewSetting.Color">
-                                    @habit.QuantityPerWeek
+                                    @habit.WeeklyGoal
                                 </td>
                             }
                             else
                             {
                                 <td id="@habit.Id">
-                                    @habit.QuantityPerWeek
+                                    @habit.WeeklyGoal
                                 </td>
                             }
                             <td>
@@ -161,7 +161,7 @@
                 var levelDiv = document.getElementById("level");
                 levelDiv.innerText = "Level: " + result.level.toString();
 
-                if (result.isCommitmentUpdated) changeColor(cellId, color, result.commitmentStatus)
+                if (result.isGoalStatusUpdated) changeColor(cellId, color, result.weeklyGoalStatus)
             },
             error: function (xhr, status, error) {
                 console.error("Error updating IfExecuted:", error);
