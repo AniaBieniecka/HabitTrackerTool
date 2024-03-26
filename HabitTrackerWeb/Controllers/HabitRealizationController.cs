@@ -97,10 +97,10 @@ namespace HabitTrackerWeb.Controllers
                 _unitOfWork.HabitRealization.Update(item);
                 _unitOfWork.Save();
 
-                var isUpdated = UpdateFulfillmentStatus(item.HabitId);
+                var isCommitmentStatusUpdated = UpdateCommitmentStatus(item.HabitId);
                 var habit = _unitOfWork.Habit.Get(u => u.Id == item.HabitId);
 
-                if (isUpdated)
+                if (isCommitmentStatusUpdated)
                 {
                     if(habit.IsWeeklyCommitmentFulfilled == true)
                     {
@@ -117,7 +117,7 @@ namespace HabitTrackerWeb.Controllers
 
                 _unitOfWork.Save();
 
-                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId });
+                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId, commitmentStatus = habit.IsWeeklyCommitmentFulfilled, isCommitmentUpdated = isCommitmentStatusUpdated});
             }
             catch (Exception ex)
             {
@@ -164,7 +164,7 @@ namespace HabitTrackerWeb.Controllers
             return uniqueWeekList.Count();
         }
 
-        private bool UpdateFulfillmentStatus(int habitId)
+        private bool UpdateCommitmentStatus(int habitId)
         {
             var habit = _unitOfWork.Habit.Get(u => u.Id == habitId);
             var habitsRealization = _unitOfWork.HabitRealization.GetAll(u => u.HabitId == habitId);

@@ -35,15 +35,15 @@
                 <div class="card-body d-flex justify-content-center">
                     <h5 class="card-title">
                         <span class="mx-1">
-                            Week: @Model.numberOfWeeks    
-                            </span>
+                            Week: @Model.numberOfWeeks
+                        </span>
                         <span id="level" class="mx-1">
                             Level: @Model.score.LevelId
                         </span>
                         <span id="score" class="mx-1">
                             Points: @Model.score.ScoreValue
                         </span>
-                    </span>
+                    </h5>
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
 
                             @foreach (var obj in habit.habitRealizations)
                             {
-                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
+                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone', @habit.Id, '@habit.ViewSetting.Color')" )>
 
                                     <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
 
@@ -106,7 +106,18 @@
 
                             }
 
-                            <td>@habit.QuantityPerWeek</td>
+                            @if (habit.IsWeeklyCommitmentFulfilled)
+                            {
+                                <td id="@habit.Id" style="background-color:@habit.ViewSetting.Color">
+                                    @habit.QuantityPerWeek
+                                </td>
+                            }
+                            else
+                            {
+                                <td id="@habit.Id">
+                                    @habit.QuantityPerWeek
+                                </td>
+                            }
                             <td>
                                 <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
                                     Edit
@@ -118,12 +129,9 @@
                         </tr>
                     }
 
-
                 </tbody>
             </table>
         }
-
-
 
 
 </body>
@@ -131,7 +139,7 @@
 
 
 <script>
-    function updateIfExecutedStatus(itemId, ifExecuted, icon) {
+    function updateIfExecutedStatus(itemId, ifExecuted, icon, cellId, color) {
 
         $.ajax({
             type: "GET",
@@ -149,15 +157,26 @@
                     $("#icon-" + itemId).html('');
 
                 var scoreDiv = document.getElementById("score");
-                scoreDiv.innerText = "Points: " +result.scoreValue.toString();
+                scoreDiv.innerText = "Points: " + result.scoreValue.toString();
                 var levelDiv = document.getElementById("level");
                 levelDiv.innerText = "Level: " + result.level.toString();
 
+                if (result.isCommitmentUpdated) changeColor(cellId, color, result.commitmentStatus)
             },
             error: function (xhr, status, error) {
                 console.error("Error updating IfExecuted:", error);
             }
         });
 
+    }
+
+    function changeColor(cellId, color, commitmentStatus) {
+
+        var cellToChange = document.getElementById(cellId);
+
+        if (commitmentStatus) {
+            cellToChange.style.backgroundColor = color;
+        }
+        else cellToChange.style.backgroundColor = "";
     }
 </script>
