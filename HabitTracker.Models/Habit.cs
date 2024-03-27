@@ -17,17 +17,22 @@ namespace HabitTracker.Models
 
         [Required]
         [MaxLength(50)]
-        public string Name { get; set; }        
-        
+        public string Name { get; set; }
+
         [DisplayName("How often per week")]
         [Range(1, 7, ErrorMessage = "Wartość musi być większa lub równa 1, ale mniejsza od 7.")]
-        public int QuantityPerWeek {  get; set; }
+
+        //planned quantity of habits per week
+        public int WeeklyGoal { get; set; }
 
         [DisplayName("Week number")]
         public int WeekNumber { get; set; }
         public int Year { get; set; }
-        public Habit() {
-            QuantityPerWeek = 7;
+        public bool IsWeeklyGoalAchieved { get; set; }
+        public Habit()
+        {
+            WeeklyGoal = 7;
+            IsWeeklyGoalAchieved = false;
         }
 
         [ValidateNever]

@@ -56,7 +56,8 @@ namespace HabitTrackerWeb.Controllers
             {
                 hab.ViewSetting = viewSetting;
             }
-            return View("Views/HabitRealization/HabitsWeekly.cshtml", habits);
+            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+
         }
     }
 }

@@ -131,7 +131,7 @@ namespace HabitTrackerWeb.Controllers
                 Habit habit = new Habit();
                 habit.Name = habitName;
                 habit.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                habit.QuantityPerWeek = 7;
+                habit.WeeklyGoal = 7;
                 index++;
                 habit.Year = loopDate.Year;
                 _unitOfWork.Habit.Add(habit);
@@ -168,7 +168,7 @@ namespace HabitTrackerWeb.Controllers
                 {
                     Habit habit = new Habit();
                     habit.Name = habitPreviousWeek.Name;
-                    habit.QuantityPerWeek = habitPreviousWeek.QuantityPerWeek;
+                    habit.WeeklyGoal = habitPreviousWeek.WeeklyGoal;
                     habit.WeekNumber = weekCurrent;
                     loopDate = lastMondayDate;
                     habit.Year = loopDate.Year;

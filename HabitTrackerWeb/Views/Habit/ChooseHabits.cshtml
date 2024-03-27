@@ -9,15 +9,12 @@
         @foreach (var habit in Model)
         {
             <div class="form-check my-1">
-
                 <input type="checkbox" name="habitNames" value="@habit" />
-
                 <label class="form-check-label">
                     <p class="lead">@habit </p>
                 </label>
             </div>
         }
-
     </div>
 
     <button type="submit" class="btn btn-primary my-3" width="50">Submit</button>

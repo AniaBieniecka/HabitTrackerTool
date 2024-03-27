@@ -5,113 +5,147 @@
 </head>
 
 <body>
-    @if (Model.habits.Count > 0)
-    {
-        <h2 class="py-2 m-2">Your habits in the current week </h2>
-    }
-    @if (Model.habits.Count == 0)
-    {
-        <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
-    }
-    <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary  m-2">
-        Create a new habit
-    </a>
-    <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
-        Choose a habit
-        <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
-    </a>
-    @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
-    {
-        <a asp-controller="Habit" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary m-2">
-            Would you like to continue habits from your previous week?
-        </a>
-    }
-    @if (Model.habits.Count > 0)
-    {
-        <table class="table table-bordered container-lg  m-2" style="text-align: center">
-            <thead>
-                <tr>
-                    <th style="width:20%">Habit Name</th>
-                    <th style="width:8%">Monday</th>
-                    <th style="width:8%">Tuesday</th>
-                    <th style="width:8%">Wednesday</th>
-                    <th style="width:8%">Thursday</th>
-                    <th style="width:8%">Friday</th>
-                    <th style="width:8%">Saturday</th>
-                    <th style="width:8%">Sunday</th>
-                    <th style="width:6%">Your goal</th>
-                    <th style="width:12%">Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
-                    {
-                        <td>@habitRealization.Date</td>
-                    }
-                    <td></td>
-                    <td></td>
-                </tr>
+    <div class="row">
+        <div class="col-8">
+            @if (Model.habits.Count > 0)
+            {
+                <h2 class="py-2 m-2">Your habits in the current week </h2>
+            }
+            @if (Model.habits.Count == 0)
+            {
+                <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
+            }
+            <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary  m-2">
+                Create New Habit
+            </a>
+            <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2">
+                Choose habits
+                <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
+            </a>
+            @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
+            {
+                <a asp-controller="Habit" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary m-2">
+                    Would you like to continue habits from your previous week?
+                </a>
+            }
+        </div>
+        <div class="col-4">
+            <div class="float-end card mb-3 " style="max-width: 20rem;">
+                <div class="card-header d-flex justify-content-center">Your score</div>
+                <div class="card-body d-flex justify-content-center">
+                    <h5 class="card-title">
+                        <span class="mx-1">
+                            Week: @Model.numberOfWeeks
+                        </span>
+                        <span id="level" class="mx-1">
+                            Level: @Model.score.LevelId
+                        </span>
+                        <span id="score" class="mx-1">
+                            Points: @Model.score.ScoreValue
+                        </span>
+                    </h5>
+                </div>
+            </div>
+        </div>
 
-                @foreach (var habit in Model.habits)
-                {
+
+        @if (Model.habits.Count > 0)
+        {
+            <table class="table table-bordered container-lg  my-3" style="text-align: center">
+                <thead>
                     <tr>
-                        <td>@habit.Name</td>
-
-                        @foreach (var obj in habit.habitRealizations)
-                        {
-                            <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
-
-                                <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
-
-                                    @if (obj.IfExecuted == 1)
-                                    {
-                                        <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
-                                    }
-                                    else if (obj.IfExecuted == 2)
-                                    {
-                                        <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
-
-                                    }
-
-                                </span>
-
-                                <input type="hidden" id="obj.Id" value="@obj.Id" />
-
-                            </td>
-
-                        }
-
-                        <td>@habit.QuantityPerWeek</td>
-                        <td>
-                            <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
-                                Edit
-                            </a>
-                            <a asp-controller="Habit" asp-action="Delete" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
-                                Delete
-                            </a>
-                        </td>
+                        <th style="width:20%">Habit Name</th>
+                        <th style="width:8%">Monday</th>
+                        <th style="width:8%">Tuesday</th>
+                        <th style="width:8%">Wednesday</th>
+                        <th style="width:8%">Thursday</th>
+                        <th style="width:8%">Friday</th>
+                        <th style="width:8%">Saturday</th>
+                        <th style="width:8%">Sunday</th>
+                        <th style="width:6%">Your goal</th>
+                        <th style="width:12%">Edit</th>
                     </tr>
-                }
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
+                        {
+                            <td>@habitRealization.Date</td>
+                        }
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    @foreach (var habit in Model.habits)
+                    {
+                        <tr>
+                            <td>@habit.Name</td>
+
+                            @foreach (var obj in habit.habitRealizations)
+                            {
+                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone', @habit.Id, '@habit.ViewSetting.Color')" )>
+
+                                    <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
+
+                                        @if (obj.IfExecuted == 1)
+                                        {
+                                            <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                        }
+                                        else if (obj.IfExecuted == 2)
+                                        {
+                                            <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+
+                                        }
+
+                                    </span>
+
+                                    <input type="hidden" id="obj.Id" value="@obj.Id" />
+
+                                </td>
+
+                            }
+
+                            @if (habit.IsWeeklyGoalAchieved)
+                            {
+                                <td id="@habit.Id" style="background-color:@habit.ViewSetting.Color">
+                                    @habit.WeeklyGoal
+                                </td>
+                            }
+                            else
+                            {
+                                <td id="@habit.Id">
+                                    @habit.WeeklyGoal
+                                </td>
+                            }
+                            <td>
+                                <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
+                                    Edit
+                                </a>
+                                <a asp-controller="Habit" asp-action="Delete" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
 
 
-            </tbody>
-        </table>
-    }
 </body>
 
 
 
 <script>
-    function updateIfExecutedStatus(itemId, ifExecuted, icon) {
+    function updateIfExecutedStatus(itemId, ifExecuted, icon, cellId, color) {
 
         $.ajax({
             type: "GET",
             url: '@Url.Action("UpdateIfExecuted", "HabitRealization")',
             data: { id: itemId },
             success: function (result) {
-                // Jeśli operacja się powiodła, możesz wykonać dodatkowe akcje
                 console.log("IfExecuted updated successfully");
 
                 if (result.ifExecuted === 1) {
@@ -122,11 +156,27 @@
                 } else
                     $("#icon-" + itemId).html('');
 
+                var scoreDiv = document.getElementById("score");
+                scoreDiv.innerText = "Points: " + result.scoreValue.toString();
+                var levelDiv = document.getElementById("level");
+                levelDiv.innerText = "Level: " + result.level.toString();
+
+                if (result.isGoalStatusUpdated) changeColor(cellId, color, result.weeklyGoalStatus)
             },
             error: function (xhr, status, error) {
                 console.error("Error updating IfExecuted:", error);
             }
         });
 
+    }
+
+    function changeColor(cellId, color, commitmentStatus) {
+
+        var cellToChange = document.getElementById(cellId);
+
+        if (commitmentStatus) {
+            cellToChange.style.backgroundColor = color;
+        }
+        else cellToChange.style.backgroundColor = "";
     }
 </script>

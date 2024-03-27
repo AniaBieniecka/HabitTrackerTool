@@ -4,6 +4,7 @@ using HabitTracker.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HabitTracker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240324170851_AddingScoreModelsToDB")]
+    partial class AddingScoreModelsToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,18 +33,15 @@ namespace HabitTracker.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsWeeklyGoalAchieved")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("WeekNumber")
+                    b.Property<int>("QuantityPerWeek")
                         .HasColumnType("int");
 
-                    b.Property<int>("WeeklyGoal")
+                    b.Property<int>("WeekNumber")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -76,13 +76,26 @@ namespace HabitTracker.DataAccess.Migrations
                     b.ToTable("HabitRealizations");
                 });
 
-            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Level", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MinimumScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Level");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
@@ -93,14 +106,6 @@ namespace HabitTracker.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Scores");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LevelId = 0,
-                            ScoreValue = 0
-                        });
                 });
 
             modelBuilder.Entity("HabitTracker.Models.ViewSetting", b =>
@@ -146,6 +151,17 @@ namespace HabitTracker.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("habit");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.HasOne("HabitTracker.Models.ScoringModels.Level", "level")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("level");
                 });
 
             modelBuilder.Entity("HabitTracker.Models.Habit", b =>

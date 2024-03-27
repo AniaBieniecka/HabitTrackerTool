@@ -12,6 +12,7 @@ namespace HabitTracker.DataAccess.Repository.IRepository
         IHabitRepository Habit { get; }
         IHabitRealizationRepository HabitRealization { get; }
         IViewSettingRepository ViewSetting { get; }
+        IScoreRepository Score { get; }
         void Save();
     }
 }
