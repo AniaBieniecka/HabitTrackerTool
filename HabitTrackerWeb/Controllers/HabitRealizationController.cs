@@ -10,6 +10,8 @@ using HabitTrackerWeb.Controllers.Services;
 using HabitTracker.Models.ViewModels;
 using HabitTracker.Models.ScoringModels;
 using static System.Formats.Asn1.AsnWriter;
+using System.Linq;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -124,6 +126,75 @@ namespace HabitTrackerWeb.Controllers
                 return new StatusCodeResult(404);
             }
         }
+        public IActionResult Progress()
+        {
+            return View();
+        }
+        public IActionResult GetProgressChartData()
+        {
+            List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            List<ProgressChartData> progressChartData = new List<ProgressChartData>();
+
+            if(habitRealizations.Count != 0)
+            {
+            var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+                var startDate = endDate.AddDays(-30);
+
+                for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    float value = 0;
+
+                    foreach (var habit in habits) { 
+
+                        var data  = habit.habitRealizations.FirstOrDefault(u => u.Date == date);
+                        if (data is not null)
+                        {
+                            if (data.IfExecuted == 1)
+                            {
+                                value += 1;
+                            } else if(data.IfExecuted == 2)
+                            {
+                                value += 0.5f;
+                            }
+                        }
+                       
+                    }
+                    var newDataAllHabits = new ProgressChartData
+                    {
+                        Date = date,
+                        Value = value
+                    };
+                    progressChartData.Add(newDataAllHabits);
+
+                }
+
+                var valuesLineChart = progressChartData.Select(u=>u.Value).ToArray();
+                var categoriesLineChart = progressChartData.Select(u=>u.Date).ToArray();
+
+                List<ChartData> chartDataList = new()
+                {
+                    new ChartData
+                    {
+                        Name ="All habits",
+                        Data = valuesLineChart
+                    },
+                };
+
+                ProgressChartVM progressChartVM = new()
+                {
+                    Series = chartDataList,
+                    Categories = categoriesLineChart,
+                };
+
+                return Json(progressChartVM);
+
+            }
+
+            else
+
+            return RedirectToAction("HabitsCurrentWeek");
+        }
 
 
         //supporting methods
@@ -194,5 +265,7 @@ namespace HabitTrackerWeb.Controllers
 
             return wasUpdated;
         }
+
+
     }
 }
