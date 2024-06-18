@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitTrackerWeb", "HabitTrackerWeb\HabitTrackerWeb.csproj", "{8C350013-6F40-44E9-A07E-A3CD67B2BB34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerWeb", "HabitTrackerWeb\HabitTrackerWeb.csproj", "{8C350013-6F40-44E9-A07E-A3CD67B2BB34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitTracker.Models", "HabitTracker.Models\HabitTracker.Models.csproj", "{65DA17D9-640A-431E-9CFC-E28CC045B668}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTracker.Models", "HabitTracker.Models\HabitTracker.Models.csproj", "{65DA17D9-640A-431E-9CFC-E28CC045B668}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitTracker.DataAccess", "HabitTracker.DataAccess\HabitTracker.DataAccess.csproj", "{8F3AA828-42DC-4935-90BA-E2E51FD0425C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTracker.DataAccess", "HabitTracker.DataAccess\HabitTracker.DataAccess.csproj", "{8F3AA828-42DC-4935-90BA-E2E51FD0425C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

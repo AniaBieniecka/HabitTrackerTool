@@ -10,6 +10,8 @@ using HabitTrackerWeb.Controllers.Services;
 using HabitTracker.Models.ViewModels;
 using HabitTracker.Models.ScoringModels;
 using static System.Formats.Asn1.AsnWriter;
+using System.Linq;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -102,9 +104,9 @@ namespace HabitTrackerWeb.Controllers
 
                 if (isGoalStatusUpdated)
                 {
-                    if(habit.IsWeeklyGoalAchieved == true)
+                    if (habit.IsWeeklyGoalAchieved == true)
                     {
-                    scoreValue += 50;
+                        scoreValue += 50;
                     }
                     else scoreValue -= 50;
                 }
@@ -117,14 +119,171 @@ namespace HabitTrackerWeb.Controllers
 
                 _unitOfWork.Save();
 
-                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId, weeklyGoalStatus = habit.IsWeeklyGoalAchieved, isGoalStatusUpdated = isGoalStatusUpdated});
+                return Json(new { ifExecuted = item.IfExecuted, scoreValue = score.ScoreValue, level = score.LevelId, weeklyGoalStatus = habit.IsWeeklyGoalAchieved, isGoalStatusUpdated = isGoalStatusUpdated });
             }
             catch (Exception ex)
             {
                 return new StatusCodeResult(404);
             }
         }
+        public IActionResult Progress()
+        {
+            return View();
+        }
+        public IActionResult GetProgressChartData()
+        {
+            List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            List<ProgressChartData> progressChartData = new List<ProgressChartData>();
 
+            if (habitRealizations.Count != 0)
+            {
+                var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+                var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+
+                for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    float value = 0;
+
+                    foreach (var habit in habits)
+                    {
+
+                        var data = habit.habitRealizations.FirstOrDefault(u => u.Date == date);
+                        if (data is not null)
+                        {
+                            if (data.IfExecuted == 1)
+                            {
+                                value += 10;
+                            }
+                            else if (data.IfExecuted == 2)
+                            {
+                                value += 5;
+                            }
+                        }
+
+                    }
+                    var newDataAllHabits = new ProgressChartData
+                    {
+                        Date = date,
+                        Value = value
+                    };
+                    progressChartData.Add(newDataAllHabits);
+
+                }
+
+                var valuesLineChart = progressChartData.Select(u => u.Value).ToArray();
+                var categoriesLineChart = progressChartData.Select(u => u.Date).ToArray();
+
+                List<ChartData> chartDataList = new()
+                {
+                    new ChartData
+                    {
+                        Name ="All habits",
+                        Data = valuesLineChart
+                    },
+                };
+
+                ProgressChartVM progressChartVM = new()
+                {
+                    Series = chartDataList,
+                    Categories = categoriesLineChart,
+                };
+
+                return Json(progressChartVM);
+
+            }
+
+            else
+
+                return RedirectToAction("HabitsCurrentWeek");
+        }
+
+        public IActionResult GetProgressChartDataForEachHabit()
+        {
+            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            List<ProgressChartData> progressChartData = new List<ProgressChartData>();
+            List<ChartData> chartDataList = new();
+            List<DateOnly> categoriesLineChart = new();
+
+            if (habitRealizations.Count != 0)
+            {
+                var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+                var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+
+
+                var startWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(startDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                var endWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(endDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                var startYear = startDate.Year;
+                var endYear = endDate.Year;
+                List<Habit> habits;
+
+                if (startYear == endYear)
+                {
+                    habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber >= startWeek && u.Year == startYear, includeProperties: "habitRealizations").OrderByDescending(x=>x.Id).Take(5).ToList();
+
+                }
+                else
+                    habits = _unitOfWork.Habit.GetAll(u => (u.WeekNumber >= startWeek && u.Year == startYear) || (u.WeekNumber <= endWeek && u.Year == endYear), includeProperties: "habitRealizations").OrderByDescending(x => x.Id).Take(5).ToList();
+
+                for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    categoriesLineChart.Add(date);
+                }
+                foreach (var habit in habits)
+                {
+                    progressChartData.Clear();
+
+                    for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
+                    {
+                        float value = 0;
+                        var data = habit.habitRealizations.FirstOrDefault(u => u.Date == date);
+                        if (data is not null)
+                        {
+                            if (data.IfExecuted == 1)
+                            {
+                                value += 10;
+                            }
+                            else if (data.IfExecuted == 2)
+                            {
+                                value += 5;
+                            }
+
+                        }
+
+                        var newData = new ProgressChartData
+                        {
+                            Date = date,
+                            Value = value
+                        };
+                        progressChartData.Add(newData);
+                    }
+
+                    var valuesLineChart = progressChartData.Select(u => u.Value).ToArray();
+                    ChartData chartData = new()
+                    {
+                        Name = habit.Name,
+                        Data = valuesLineChart
+                    };
+
+                    chartDataList.Add(chartData);
+
+                }
+                var categories = categoriesLineChart.ToArray();
+
+                ProgressChartVM progressChartVM = new()
+                {
+                    Series = chartDataList,
+                    Categories = categories,
+                };
+
+                return Json(progressChartVM);
+
+            }
+
+            else
+
+                return RedirectToAction("HabitsCurrentWeek");
+        }
 
         //supporting methods
         private int SetLevel(int levelId, int scoreValue)
@@ -194,5 +353,7 @@ namespace HabitTrackerWeb.Controllers
 
             return wasUpdated;
         }
+
+
     }
 }
