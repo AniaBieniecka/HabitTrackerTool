@@ -139,9 +139,7 @@ namespace HabitTrackerWeb.Controllers
             if (habitRealizations.Count != 0)
             {
                 var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
-                DateTime lastDayOfPreviousMonth = new DateTime(endDate.Year, endDate.Month, 1).AddDays(-1);
-                int daysOnTheChart = DateTime.DaysInMonth(lastDayOfPreviousMonth.Year, lastDayOfPreviousMonth.Month);
-                var startDate = endDate.AddDays(-daysOnTheChart);
+                var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
 
                 for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
                 {
@@ -210,9 +208,8 @@ namespace HabitTrackerWeb.Controllers
             if (habitRealizations.Count != 0)
             {
                 var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
-                DateTime lastDayOfPreviousMonth = new DateTime(endDate.Year, endDate.Month, 1).AddDays(-1);
-                int daysOnTheChart = DateTime.DaysInMonth(lastDayOfPreviousMonth.Year, lastDayOfPreviousMonth.Month);
-                var startDate = endDate.AddDays(-daysOnTheChart);
+                var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+
 
                 var startWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(startDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                 var endWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(endDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
