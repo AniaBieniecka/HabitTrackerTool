@@ -3,16 +3,14 @@
 </head>
 
 <body>
-    <h2 class="py-2">Habit View</h2>
-    <a asp-controller="Habit" asp-action="Create" class="btn btn-primary m-2">
-        Create New Habit
-    </a>
+    <h2 class="p-4 text-center">All habit list</h2>
     <div class="col-9">
-    <table class="table table-bordered container-lg" style="text-align: center" >
+    <table class="table table-bordered container-lg " style="text-align: center" >
             <thead>
                 <tr>
                 <th style="width:30%">Habit Name</th>
-                <th style="width:10%">Quantity Per Week</th>
+                <th style="width:20%">Week number, year</th>
+                <th style="width:15%">Quantity Per Week</th>
                 <th style="width:20%"></th>
                 </tr>
             </thead>
@@ -22,6 +20,7 @@
                 {
                     <tr>
                         <td>@obj.Name</td>
+                        <td>@obj.WeekNumber, @obj.Year</td>
                         <td>@obj.WeeklyGoal</td>
                         <td>
 
