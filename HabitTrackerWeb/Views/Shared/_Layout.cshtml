@@ -22,26 +22,26 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" >
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="HabitsCurrentWeek">Current week</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="Index">Habit List</a>
+                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="Progress">
+                                Your progress
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="ViewSetting" asp-action="Update">Change view options</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Habit" asp-action="ShowWeeks">History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutScoring">About scoring
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutScoring">Read about scoring
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="HabitRealization" asp-action="Progress">Your progress
-                            </a>
+                        <li class="nav-item dropdown">
+                            <span class="nav-link dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Other</span>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" asp-area="" asp-controller="Habit" asp-action="Index">Habit List</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Habit" asp-action="ShowWeeks">Habits history</a>
+                            </ul>
                         </li>
                     </ul>
+
                 </div>
             </div>
         </nav>
