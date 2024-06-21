@@ -8,80 +8,85 @@
         }
     </style>
 </head>
+<body>
+    <div class="container">
+        <h2 class="py-4 px-2">Set your icons preferences</h2>
+        <form asp-action="Update" asp-controller="ViewSetting" method="post">
 
-<h2 class="py-2">Set your icons preferences</h2>
-<form asp-action="Update" asp-controller="ViewSetting" method="post">
 
+            <div class="row px-2">
 
-    <div class="row">
+                <div class="col-12 col-sm-6 col-md-4">
+                    <legend class="mt-2">Choose your icons</legend>
 
-        <div class="col-12 col-sm-6 col-md-4">
-            <legend class="mt-4">Choose your icons</legend>
+                    @for (int i = 0; i < Model.availableIconsDone.Count || i < Model.availableIconsPartiallyDone.Count; i++)
 
-            @for (int i = 0; i < Model.availableIconsDone.Count || i < Model.availableIconsPartiallyDone.Count; i++)
-
-            {
-                <div class="form-check">
-                    @if (i == 0)
                     {
-                        <input asp-for="IconPartiallyDone" type="radio" name="viewSetting.IconPartiallyDone" value="@Model.availableIconsPartiallyDone[i]" checked />
+                        <div class="form-check">
+                            @if (i == 0)
+                            {
+                                <input asp-for="IconPartiallyDone" type="radio" name="viewSetting.IconPartiallyDone" value="@Model.availableIconsPartiallyDone[i]" checked />
 
+                            }
+                            else
+                            {
+                                <input asp-for="IconPartiallyDone" type="radio" name="viewSetting.IconPartiallyDone" value="@Model.availableIconsPartiallyDone[i]" />
+                            }
+                            <label class="form-check-label">
+                                <i class=" @Model.availableIconsDone[i]" style="font-size: 1.5rem"></i>
+                                <i class=" @Model.availableIconsPartiallyDone[i]" style="font-size: 1.5rem"></i>
+                            </label>
+                        </div>
                     }
-                    else
-                    {
-                        <input asp-for="IconPartiallyDone" type="radio" name="viewSetting.IconPartiallyDone" value="@Model.availableIconsPartiallyDone[i]" />
-                    }
-                    <label class="form-check-label">
-                        <i class=" @Model.availableIconsDone[i]" style="font-size: 1.5rem"></i>
-                        <i class=" @Model.availableIconsPartiallyDone[i]" style="font-size: 1.5rem"></i>
-                    </label>
+
+
                 </div>
-            }
 
+                <div class="col-12 col-sm-6 col-md-4">
 
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4">
-
-            <legend class="mt-4">Choose color</legend>
-            <div class="divide-content">
-                @{
-                    int j = 0;
-                }
-                @for (int i = 0; i < Model.availableColors.Count; i++)
-
-                {
-
-                    if (j == Model.availableIconsPartiallyDone.Count || j == Model.availableIconsDone.Count) { j = 0; }
-
-                    <div class="form-check">
-                        @if (i == 0)
-                        {
-                            <input asp-for="Color" type="radio" name="viewSetting.Color" id="optionsRadios1" value="@Model.availableColors[i]" checked="">
+                    <legend class="mt-2">Choose color</legend>
+                    <div class="divide-content">
+                        @{
+                            int j = 0;
                         }
-                        else
+                        @for (int i = 0; i < Model.availableColors.Count; i++)
+
                         {
-                            <input asp-for="Color" type="radio" name="viewSetting.Color" id="optionsRadios1" value="@Model.availableColors[i]">
+
+                            if (j == Model.availableIconsPartiallyDone.Count || j == Model.availableIconsDone.Count) { j = 0; }
+
+                            <div class="form-check">
+                                @if (i == 0)
+                                {
+                                    <input asp-for="Color" type="radio" name="viewSetting.Color" id="optionsRadios1" value="@Model.availableColors[i]" checked="">
+                                }
+                                else
+                                {
+                                    <input asp-for="Color" type="radio" name="viewSetting.Color" id="optionsRadios1" value="@Model.availableColors[i]">
+                                }
+                                <label class="form-check-label">
+                                    <i class="@Model.availableIconsDone[j]" style="font-size: 1.5rem; color:@Model.availableColors[i]"></i>
+                                    <i class="@Model.availableIconsPartiallyDone[j]" style="font-size: 1.5rem; color:@Model.availableColors[i]"></i>
+
+
+                                </label>
+                            </div>
+                            j++;
+
                         }
-                        <label class="form-check-label">
-                            <i class="@Model.availableIconsDone[j]" style="font-size: 1.5rem; color:@Model.availableColors[i]"></i>
-                            <i class="@Model.availableIconsPartiallyDone[j]" style="font-size: 1.5rem; color:@Model.availableColors[i]"></i>
 
-
-                        </label>
                     </div>
-                    j++;
-
-                }
-
+                </div>
             </div>
-        </div>
+
+
+            <button type="submit" class="btn btn-primary m-4" width="50">Submit changes</button>
+
+        </form>
     </div>
 
+</body>
 
-    <button type="submit" class="btn btn-primary m-4" width="50">Submit changes</button>
-
-</form>
 
 @section Scripts {
     @{
