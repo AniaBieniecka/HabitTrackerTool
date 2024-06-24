@@ -128,7 +128,26 @@ namespace HabitTrackerWeb.Controllers
         }
         public IActionResult Progress()
         {
-            return View();
+            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            int howManyHabitsInMonth;
+
+            var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+            var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+            var startWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(startDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var endWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(endDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var startYear = startDate.Year;
+            var endYear = endDate.Year;
+
+            if (startYear == endYear)
+            {
+                howManyHabitsInMonth = _unitOfWork.Habit.GetAll(u => u.WeekNumber >= startWeek && u.Year == startYear).OrderByDescending(x => x.Id).Count();
+
+            }
+            else
+                howManyHabitsInMonth = _unitOfWork.Habit.GetAll(u => (u.WeekNumber >= startWeek && u.Year == startYear) || (u.WeekNumber <= endWeek && u.Year == endYear)).OrderByDescending(x => x.Id).Count();
+
+            int chartsQuantity = (int)Math.Ceiling((double)howManyHabitsInMonth / 5);  
+            return View(chartsQuantity);
         }
         public IActionResult GetProgressChartData()
         {
@@ -198,7 +217,7 @@ namespace HabitTrackerWeb.Controllers
                 return RedirectToAction("HabitsCurrentWeek");
         }
 
-        public IActionResult GetProgressChartDataForEachHabit()
+        public IActionResult GetProgressChartDataForEachHabit(int chartNumber)
         {
             List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
             List<ProgressChartData> progressChartData = new List<ProgressChartData>();
@@ -217,9 +236,11 @@ namespace HabitTrackerWeb.Controllers
                 var endYear = endDate.Year;
                 List<Habit> habits;
 
+                int habitsSkipped = chartNumber * 5;
+
                 if (startYear == endYear)
                 {
-                    habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber >= startWeek && u.Year == startYear, includeProperties: "habitRealizations").OrderByDescending(x=>x.Id).Take(5).ToList();
+                    habits = _unitOfWork.Habit.GetAll(u => u.WeekNumber >= startWeek && u.Year == startYear, includeProperties: "habitRealizations").OrderByDescending(x=>x.Id).Skip(habitsSkipped).Take(5).ToList();
 
                 }
                 else

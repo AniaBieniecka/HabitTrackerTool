@@ -1,19 +1,23 @@
 ﻿
 $(document).ready(function () {
-    loadEachHabitProgressChartData();
+    for (var i = 0; i < chartsQuantity; i++){
+        loadEachHabitProgressChartData(i);
+    }
 });
 
-function loadEachHabitProgressChartData() {
+function loadEachHabitProgressChartData(chartNumber) {
+    console.log("Parameter: " + chartNumber);
+
     $(".chart-spinner").show();
 
     $.ajax({
-        url: "/HabitRealization/GetProgressChartDataForEachHabit",
+        url: "/HabitRealization/GetProgressChartDataForEachHabit/"+chartNumber,
         type: 'GET',
+        data: { chartNumber: chartNumber },
         dataType: 'json',
         success: function (data) {
 
-
-            loadEachHabitLineChart("newRealizationLineChartForEachHabit", data);
+            loadEachHabitLineChart("newRealizationLineChartForEachHabit_" + chartNumber, data);
 
             $(".chart-spinner").hide();
         }
@@ -50,8 +54,13 @@ function loadEachHabitLineChart(id, data) {
 
             title: {
                 text: 'Points'
-            }
-        }
+            },
+
+        },
+        legend: {
+            show: true,
+            showForSingleSeries: true
+        },
 
     }
 
