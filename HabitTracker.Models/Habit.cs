@@ -16,7 +16,7 @@ namespace HabitTracker.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(80)]
         public string Name { get; set; }
 
         [DisplayName("How often per week")]

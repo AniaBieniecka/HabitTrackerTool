@@ -1,7 +1,7 @@
 ﻿@model Habit
 
 
-<h2 class="py-2">Are you sure you want to delete below habit?</h2>
+<h2 class="py-4 px-2">Are you sure you want to delete this habit?</h2>
 
 <form method="post">
     <input asp-for="@Model.Id" hidden />
@@ -16,9 +16,9 @@
             <label asp-for="WeeklyGoal" class="text-dark"></label>
             <span asp-validation-for="WeeklyGoal" class="text-primary"></span>
         </div>
-            <button type="submit" class="btn btn-primary m-2" width="50">Yes, definitely</button>
-            <a asp-controller="HabitRealization" asp-action="HabitsCurrentWeek" class="btn btn-primary">
-                Back to List
+            <button type="submit" class="btn btn-primary m-2 w-25">Yes, definitely</button>
+            <a asp-controller="HabitRealization" asp-action="HabitsCurrentWeek" class="btn btn-primary w-25">
+                No, go back to List
             </a>
         </div>
 

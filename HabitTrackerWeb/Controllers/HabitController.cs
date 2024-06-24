@@ -136,6 +136,7 @@ namespace HabitTrackerWeb.Controllers
                 habit.Year = loopDate.Year;
                 _unitOfWork.Habit.Add(habit);
                 _unitOfWork.Save();
+                loopDate = mondayDate;
 
                 for (int i = 0; i < 7; i++)
                 {
