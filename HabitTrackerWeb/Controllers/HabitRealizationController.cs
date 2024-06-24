@@ -152,13 +152,29 @@ namespace HabitTrackerWeb.Controllers
         public IActionResult GetProgressChartData()
         {
             List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
-            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            List<HabitRealization> allHabitRealizations = _unitOfWork.HabitRealization.GetAll().OrderBy(x=>x.Date).ToList();
             List<ProgressChartData> progressChartData = new List<ProgressChartData>();
 
-            if (habitRealizations.Count != 0)
+            if (allHabitRealizations.Count != 0)
             {
-                var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+                var endDate = DateOnly.FromDateTime(DateTime.Now);
                 var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+                var habitRealizations = allHabitRealizations.FindAll(u=> u.Date>=startDate);
+                bool isDateFound = false;
+
+                foreach(var habitRealization in habitRealizations)
+                {
+                    if (startDate == habitRealization.Date)
+                    {
+                        isDateFound = true;
+                        break;
+                    }
+                }
+
+                if (!isDateFound)
+                {
+                    startDate = habitRealizations.FirstOrDefault().Date;
+                }
 
                 for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
                 {
@@ -219,23 +235,37 @@ namespace HabitTrackerWeb.Controllers
 
         public IActionResult GetProgressChartDataForEachHabit(int chartNumber)
         {
-            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            List<HabitRealization> allHbitRealizations = _unitOfWork.HabitRealization.GetAll().OrderBy(x => x.Date).ToList();
             List<ProgressChartData> progressChartData = new List<ProgressChartData>();
             List<ChartData> chartDataList = new();
             List<DateOnly> categoriesLineChart = new();
 
-            if (habitRealizations.Count != 0)
+            if (allHbitRealizations.Count != 0)
             {
-                var endDate = habitRealizations.OrderBy(d => d.Date).LastOrDefault().Date;
+                var endDate = DateOnly.FromDateTime(DateTime.Now);
                 var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
+                var habitRealizations = allHbitRealizations.FindAll(u => u.Date >= startDate);
+                bool isDateFound = false;
 
+                foreach (var habitRealization in habitRealizations)
+                {
+                    if (startDate == habitRealization.Date)
+                    {
+                        isDateFound = true;
+                        break;
+                    }
+                }
+
+                if (!isDateFound)
+                {
+                    startDate = habitRealizations.FirstOrDefault().Date;
+                }
 
                 var startWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(startDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                 var endWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(endDate.ToDateTime(TimeOnly.MinValue), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                 var startYear = startDate.Year;
                 var endYear = endDate.Year;
                 List<Habit> habits;
-
                 int habitsSkipped = chartNumber * 5;
 
                 if (startYear == endYear)
