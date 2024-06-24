@@ -21,18 +21,22 @@ namespace HabitTracker.Models
         {
             HabitSuggestions = new List<string>
         {
-
             "Make your bed",
-            "Name 3 things in your life that you are grateful for",
-            "Clean for 15 minute",
-            "Write a journal",
+            "Practise gratitude",
+            "Clean for 15 minutes",
+            "Write a journal for 5 minutes",
             "Take a walk",
-            "Make something nice for someone",
+            "Make a one good things for someone",
             "Practise mindfulness",
             "Don't use your phone before sleep",
             "Don't eat sugar",
             "Get enough sleep",
-            "Don't use social media"
+            "Don't use social media for 8 hours daily",
+            "Read 5 pages of the book",
+            "Exercise for 10 minutes",
+            "Learn 5 new words in foreign language",
+            "Eat healthy",
+            "Take a vitamin D"
         };
         }
     }
