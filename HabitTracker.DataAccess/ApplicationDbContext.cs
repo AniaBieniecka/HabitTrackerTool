@@ -16,6 +16,7 @@ namespace HabitTracker.DataAccess.Data
         }
 
         public DbSet<Habit> Habits {  get; set; }
+        public DbSet<HabitWeek> HabitWeeks { get; set; }
         public DbSet<HabitRealization> HabitRealizations { get; set; }
         public DbSet<ViewSetting> ViewSettings { get; set; }
         public DbSet<Score> Scores { get; set; }
