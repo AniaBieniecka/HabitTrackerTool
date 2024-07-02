@@ -1,4 +1,4 @@
-﻿@model List<Habit>
+﻿@model List<HabitWeek>
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -32,24 +32,24 @@
                 }
                 <td></td>
             </tr>
-            @foreach (var habit in Model)
+            @foreach (var habitWeek in Model)
             {
                 <tr>
-                    <td>@habit.Name</td>
+                    <td>@habitWeek.habit.Name</td>
 
-                    @foreach (var obj in habit.habitRealizations)
+                    @foreach (var obj in habitWeek.habitRealizations)
                     {
-                        <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone')" )>
+                        <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habitWeek.habit.ViewSetting.IconPartiallyDone')" )>
 
-                            <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
+                            <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;">
 
                                 @if (obj.IfExecuted == 1)
                                 {
-                                    <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                    <i class="@habitWeek.habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;"></i>
                                 }
                                 else if (obj.IfExecuted == 2)
                                 {
-                                    <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                    <i class="@habitWeek.habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;"></i>
 
                                 }
 
@@ -61,7 +61,7 @@
 
                     }
 
-                    <td>@habit.WeeklyGoal</td>
+                    <td>@habitWeek.WeeklyGoal</td>
                 </tr>
             }
 
