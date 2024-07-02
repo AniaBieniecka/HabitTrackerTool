@@ -10,6 +10,7 @@ namespace HabitTracker.DataAccess.Repository.IRepository
     public interface IUnitOfWork
     {
         IHabitRepository Habit { get; }
+        IHabitWeekRepository HabitWeek { get;}
         IHabitRealizationRepository HabitRealization { get; }
         IViewSettingRepository ViewSetting { get; }
         IScoreRepository Score { get; }

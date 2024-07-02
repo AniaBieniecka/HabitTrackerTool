@@ -11,23 +11,32 @@ using System.Threading.Tasks;
 
 namespace HabitTracker.Models
 {
-    public class Habit
+    public class HabitWeek
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(80)]
-        public string Name { get; set; }
+        [DisplayName("Week number")]
+        public int WeekNumber { get; set; }
+        public int Year { get; set; }
 
         [DisplayName("How often per week")]
         [Range(1, 7, ErrorMessage = "Wartość musi być większa lub równa 1, ale mniejsza od 7.")]
 
+        //planned quantity of habits per week
+        public int WeeklyGoal { get; set; }
+        public bool IsWeeklyGoalAchieved { get; set; }
+
+        public HabitWeek()
+        {
+            WeeklyGoal = 7;
+            IsWeeklyGoalAchieved = false;
+        }
+        public int HabitId { get; set; }
+        [ForeignKey("HabitId")]
         [ValidateNever]
-        public List<HabitWeek> habitWeeks { get; set; }
+        public Habit habit { get; set; }
 
         [ValidateNever]
-        [NotMapped]
-        public ViewSetting ViewSetting { get; set; }
-
+        public List<HabitRealization> habitRealizations { get; set; }
     }
 }

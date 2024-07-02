@@ -17,8 +17,8 @@ namespace HabitTracker.Models
         public DateOnly Date { get; set; }
 
 
-        public int HabitId { get; set; }
-        [ForeignKey("HabitId")]
-        public Habit habit { get; set; }
+        public int HabitWeekId { get; set; }
+        [ForeignKey("HabitWeekId")]
+        public HabitWeek habitWeek { get; set; }
     }
 }

@@ -21,12 +21,12 @@ namespace HabitTrackerWeb.Controllers
         public IActionResult Update()
         {
             var availableIcon = new AvailableIcon();
-            var avaialableColor = new AvailableColor();
+            var availableColor = new AvailableColor();
             var viewSetting = new ViewSetting()
             {
                 availableIconsDone = availableIcon.AvailableIconsDone,
                 availableIconsPartiallyDone = availableIcon.AvailableIconsPartiallyDone,
-                availableColors = avaialableColor.AvailableColors
+                availableColors = availableColor.AvailableColors
             };
 
 
@@ -50,7 +50,7 @@ namespace HabitTrackerWeb.Controllers
                 }
             }
 
-            List<Habit> habits = _unitOfWork.Habit.GetAll(includeProperties: "habitRealizations").ToList();
+            List<Habit> habits = _unitOfWork.Habit.GetAll().ToList();
 
             foreach (Habit hab in habits)
             {

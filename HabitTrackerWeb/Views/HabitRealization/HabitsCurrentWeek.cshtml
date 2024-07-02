@@ -7,27 +7,38 @@
 <body>
     <div class="row">
         <div class="col-7">
-            @if (Model.habits.Count > 0)
+            @if (Model.habitWeekList.Count > 0)
             {
                 <h2 class="py-2 m-2">Your habits in the current week </h2>
             }
-            @if (Model.habits.Count == 0)
+            @if (Model.habitWeekList.Count == 0)
             {
                 <h5 class="py-2 m-2">You didn't register any habit for this week</h5>
             }
-            <a asp-controller="Habit" asp-action="Upsert" class="btn btn-primary m-2 w-25">
-                Create New Habit
-            </a>
-            <a asp-controller="Habit" asp-action="ChooseHabits" class="btn btn-primary m-2 w-25">
-                Choose habits
-                <input type="hidden" id="habitsCount" value="@Model.habits.Count" />
-            </a>
-            @if (Model.habits.Count == 0 && Model.habitsHasAnyData == true)
-            {
-                <a asp-controller="Habit" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary m-2">
-                    Would you like to continue habits from your previous week?
+            <div class="row">
+                <div class="col-lg-4 col-md-5 col-sm-6 col-10 mb-3">
+                <a asp-controller="HabitWeek" asp-action="Upsert" class="btn btn-primary d-block w-100 m-2">
+                    Create New Habit
                 </a>
-            }
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-6 col-10 mb-3">
+
+                    <a asp-controller="HabitWeek" asp-action="ChooseHabits" class="btn btn-primary d-block w-100 m-2">
+                    Choose habits
+                    <input type="hidden" id="habitsCount" value="@Model.habitWeekList.Count" />
+                </a>
+                </div>
+                @if (Model.habitWeekList.Count == 0 && Model.habitsHasAnyData == true)
+                {
+                    <div class="col-lg-8 col-md-10 col-sm-12 col-10 mb-3">
+
+                    <a asp-controller="HabitWeek" asp-action="CreateHabitsFromPreviousWeek" class="btn btn-primary d-block w-100 m-2">
+                        Would you like to continue habits from your previous week?
+                    </a>
+                    </div>
+                }
+            </div>
+
         </div>
         <div class="col-5">
             <div class="float-end card mb-3  border-primary" style="max-width: 50rem;">
@@ -49,7 +60,7 @@
         </div>
 
 
-        @if (Model.habits.Count > 0)
+        @if (Model.habitWeekList.Count > 0)
         {
             <table class="table table-bordered container-lg  my-3" style="text-align: center">
                 <thead>
@@ -69,7 +80,7 @@
                 <tbody>
                     <tr>
                         <td></td>
-                        @foreach (var habitRealization in Model.habits.FirstOrDefault().habitRealizations)
+                        @foreach (var habitRealization in Model.habitWeekList.FirstOrDefault().habitRealizations)
                         {
                             <td>@habitRealization.Date</td>
                         }
@@ -77,24 +88,24 @@
                         <td></td>
                     </tr>
 
-                    @foreach (var habit in Model.habits)
+                    @foreach (var habitWeek in Model.habitWeekList)
                     {
                         <tr>
-                            <td>@habit.Name</td>
+                            <td>@habitWeek.habit.Name</td>
 
-                            @foreach (var obj in habit.habitRealizations)
+                            @foreach (var obj in habitWeek.habitRealizations)
                             {
-                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habit.ViewSetting.IconPartiallyDone', @habit.Id, '@habit.ViewSetting.Color')" )>
+                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habitWeek.habit.ViewSetting.IconPartiallyDone', @habitWeek.Id, '@habitWeek.habit.ViewSetting.Color')" )>
 
-                                    <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;">
+                                    <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;">
 
                                         @if (obj.IfExecuted == 1)
                                         {
-                                            <i class="@habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                            <i class="@habitWeek.habit.ViewSetting.IconDone" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;"></i>
                                         }
                                         else if (obj.IfExecuted == 2)
                                         {
-                                            <i class="@habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habit.ViewSetting.Color;"></i>
+                                            <i class="@habitWeek.habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;"></i>
 
                                         }
 
@@ -106,23 +117,23 @@
 
                             }
 
-                            @if (habit.IsWeeklyGoalAchieved)
+                            @if (habitWeek.IsWeeklyGoalAchieved)
                             {
-                                <td id="@habit.Id" style="background-color:@habit.ViewSetting.Color">
-                                    @habit.WeeklyGoal
+                                <td id="@habitWeek.Id" style="background-color:@habitWeek.habit.ViewSetting.Color">
+                                    @habitWeek.WeeklyGoal
                                 </td>
                             }
                             else
                             {
-                                <td id="@habit.Id">
-                                    @habit.WeeklyGoal
+                                <td id="@habitWeek.Id">
+                                    @habitWeek.WeeklyGoal
                                 </td>
                             }
                             <td>
-                                    <a asp-controller="Habit" asp-action="Upsert" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1" style="min-width: 48%;">
+                                <a asp-controller="HabitWeek" asp-action="Upsert" asp-route-id="@habitWeek.Id" class="btn btn-outline-primary my-1" style="min-width: 48%;">
                                         Edit
                                     </a>
-                                <a asp-controller="Habit" asp-action="Delete" asp-route-id="@habit.Id" class="btn btn-outline-primary my-1" style="min-width: 48%;">
+                                <a asp-controller="HabitWeek" asp-action="Delete" asp-route-id="@habitWeek.Id" class="btn btn-outline-primary my-1" style="min-width: 48%;">
                                         Delete
                                     </a>
 
