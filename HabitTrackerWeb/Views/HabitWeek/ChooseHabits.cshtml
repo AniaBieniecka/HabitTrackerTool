@@ -1,0 +1,28 @@
+﻿@model List<string>
+
+
+<div class="container">
+    <form asp-action="ChooseHabits" asp-controller="HabitWeek" method="post">
+
+        <div class="row">
+            <h2 class="py-4">
+                Choose habits from our suggestions below
+            </h2>
+            @foreach (var habit in Model)
+            {
+                <div class="form-check my-1">
+                    <input type="checkbox" name="habitNames" value="@habit" />
+                    <label class="form-check-label">
+                        <p class="lead mx-4">@habit </p>
+                    </label>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <button type="submit" class="btn btn-primary m-3 w-25">Submit</button>
+            <a asp-controller="HabitRealization" asp-action="HabitsCurrentWeek" class="btn btn-primary w-25 m-3">
+                Back to List
+            </a>
+        </div>
+    </form>
+</div>

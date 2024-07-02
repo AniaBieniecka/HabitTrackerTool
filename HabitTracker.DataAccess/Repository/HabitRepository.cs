@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace HabitTracker.DataAccess.Repository
 {
@@ -14,15 +15,25 @@ namespace HabitTracker.DataAccess.Repository
 
     {
         private ApplicationDbContext _db;
-        public HabitRepository(ApplicationDbContext db): base(db)
+        public HabitRepository(ApplicationDbContext db) : base(db)
         {
-            _db = db;   
+            _db = db;
         }
 
 
         public void Update(Habit obj)
         {
-            _db.Habits.Update(obj);
+            var local = _db.Set<Habit>()
+        .Local
+        .FirstOrDefault(entry => entry.Id.Equals(obj.Id));
+
+            if (local != null)
+            {
+                _db.Entry(local).State = EntityState.Detached;
+            }
+
+            _db.Entry(obj).State = EntityState.Modified;
+
         }
     }
 }
