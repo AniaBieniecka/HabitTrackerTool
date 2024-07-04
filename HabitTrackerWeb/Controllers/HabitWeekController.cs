@@ -4,28 +4,39 @@ using HabitTracker.Models;
 using HabitTracker.Models.ViewModels;
 using HabitTrackerWeb.Controllers.Services;
 using HabitTrackerWeb.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace HabitTrackerWeb.Controllers
 {
+    [Authorize]
     public class HabitWeekController : Controller
     {
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateService _dateService;
-        public HabitWeekController(IUnitOfWork unitOfWork, IDateService dateService)
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public HabitWeekController(IUnitOfWork unitOfWork, IDateService dateService, UserManager<IdentityUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _dateService = dateService;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
         {
-            List<Habit> objHabitList = _unitOfWork.Habit.GetAll(includeProperties:"habitWeeks").ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //var user = _userManager.FindByIdAsync(userId).GetAwaiter().GetResult();
+
+            List<Habit> objHabitList = _unitOfWork.Habit.GetAll(u=>u.UserId==userId,includeProperties:"habitWeeks").ToList();
             return View(objHabitList);
         }
 
@@ -47,6 +58,9 @@ namespace HabitTrackerWeb.Controllers
         [HttpPost]
         public IActionResult Upsert(HabitWeek habitWeek)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             var habitsFromDB = _unitOfWork.Habit.GetAll();
             int habitId;
             bool isHabitFoundInDB = false;
@@ -114,6 +128,7 @@ namespace HabitTrackerWeb.Controllers
                     {
                         habitWeek.WeekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                         habitWeek.Year = loopDate.Year;
+                        habitWeek.habit.UserId = userId;
                         _unitOfWork.Habit.Add(habitWeek.habit);
                         _unitOfWork.Save();
 
@@ -158,7 +173,10 @@ namespace HabitTrackerWeb.Controllers
 
         public IActionResult ShowWeeks()
         {
-            List<HabitWeek> habitWeeks = _unitOfWork.HabitWeek.GetAll().ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitWeek> habitWeeks = _unitOfWork.HabitWeek.GetAll(u=>u.habit.UserId == userId).ToList();
 
             List<WeekYear> weekYearList = new List<WeekYear>();
 
@@ -214,6 +232,9 @@ namespace HabitTrackerWeb.Controllers
             int habitId;
             bool isHabitFoundInDB = false;
 
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             foreach (var habitName in habitNames)
             {
 
@@ -230,7 +251,7 @@ namespace HabitTrackerWeb.Controllers
                         //CHECK IF HABIT WEEK FOR THIS HABIT AND WEEK EXIST
 
                         var existingHabitWeek = _unitOfWork.HabitWeek.GetAll
-                        (u => u.WeekNumber == currentWeek && u.Year == mondayDate.Year && u.habit.Name == habitName);
+                        (u => u.WeekNumber == currentWeek && u.Year == mondayDate.Year && u.habit.Name == habitName && u.habit.UserId == userId);
 
                         //IF HABIT WEEK EXIST
                         if (existingHabitWeek != null)
@@ -266,6 +287,7 @@ namespace HabitTrackerWeb.Controllers
                 {
                     Habit habit = new Habit();
                     habit.Name = habitName;
+                    habit.UserId = userId;
 
                     _unitOfWork.Habit.Add(habit);
                     _unitOfWork.Save();
@@ -303,7 +325,11 @@ namespace HabitTrackerWeb.Controllers
             int year = mondayDateFromPreviousWeek.Year;
             DateOnly loopDate;
 
-            List<HabitWeek> habitWeeksFromPreviousWeek = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekPrevious && u.Year == year).ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitWeek> habitWeeksFromPreviousWeek = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekPrevious && u.Year == year && u.habit.UserId == userId).ToList();
+
 
             if (habitWeeksFromPreviousWeek.Count > 0)
             {

@@ -12,6 +12,8 @@ else
 
 <form method="post">
     <input asp-for="@Model.Id" hidden />
+    <input asp-for="@Model.UserId" hidden />
+
     <div class="col-lg-6">
         <div class="form-floating m-2">
             <input asp-for="Name" class="form-control"></input>

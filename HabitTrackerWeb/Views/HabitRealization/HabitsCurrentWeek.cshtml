@@ -28,7 +28,7 @@
                     <input type="hidden" id="habitsCount" value="@Model.habitWeekList.Count" />
                 </a>
                 </div>
-                @if (Model.habitWeekList.Count == 0 && Model.habitsHasAnyData == true)
+                @if (Model.habitWeekList.Count == 0 && Model.howManyHabitsInPreviousWeek != 0)
                 {
                     <div class="col-lg-8 col-md-10 col-sm-12 col-10 mb-3">
 

@@ -10,7 +10,7 @@ namespace HabitTracker.Models.ViewModels
     public class HabitsCurrentWeekVM
     {
         public List<HabitWeek> habitWeekList { get; set; }
-        public bool habitsHasAnyData { get; set; }
+        public int howManyHabitsInPreviousWeek { get; set; }
         public Score score { get; set; }
         public int numberOfWeeks { get; set; }
 
