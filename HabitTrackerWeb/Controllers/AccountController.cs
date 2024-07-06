@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using HabitTracker.DataAccess.Repository.IRepository;
 using HabitTracker.Models;
+using HabitTracker.Models.ScoringModels;
 using HabitTracker.Models.ViewModels;
 using HabitTrackerWeb.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -116,6 +117,16 @@ namespace HabitTrackerWeb.Controllers
                 };
 
                 _unitOfWork.ViewSetting.Add(viewSetting);
+                _unitOfWork.Save();
+
+                var score = new Score() 
+                { 
+                    ScoreValue = 0,
+                    LevelId = 0,
+                    UserId = user.Id
+
+                };
+                _unitOfWork.Score.Update(score);
                 _unitOfWork.Save();
 
                 if (result.Succeeded)

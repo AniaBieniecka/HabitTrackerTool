@@ -72,7 +72,7 @@ namespace HabitTrackerWeb.Controllers
             {
                 habitWeekList = habitWeekList,
                 howManyHabitsInPreviousWeek = howManyHabitsInPreviousWeek,
-                score = _unitOfWork.Score.Get(u => u.Id == 1),
+                score = _unitOfWork.Score.Get(u => u.UserId == userId),
                 numberOfWeeks = HowManyWeeks(),
             };
 
@@ -87,9 +87,12 @@ namespace HabitTrackerWeb.Controllers
         [HttpGet]
         public IActionResult UpdateIfExecuted(int id)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             try
             {
-                var score = _unitOfWork.Score.Get(u => u.Id == 1);
+                var score = _unitOfWork.Score.Get(u => u.UserId == userId);
                 var scoreValue = score.ScoreValue;
                 var item = _unitOfWork.HabitRealization.Get(u => u.Id == id);
 

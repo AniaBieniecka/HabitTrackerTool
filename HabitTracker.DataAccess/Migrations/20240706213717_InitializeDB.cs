@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HabitTracker.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class addedIdentityToDB : Migration
+    public partial class InitializeDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -156,6 +156,113 @@ namespace HabitTracker.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Habits",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Habits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Habits_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Scores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ScoreValue = table.Column<int>(type: "int", nullable: false),
+                    LevelId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Scores_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ViewSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IconPartiallyDone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IconDone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ViewSettings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ViewSettings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HabitWeeks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekNumber = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    WeeklyGoal = table.Column<int>(type: "int", nullable: false),
+                    IsWeeklyGoalAchieved = table.Column<bool>(type: "bit", nullable: false),
+                    HabitId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HabitWeeks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HabitWeeks_Habits_HabitId",
+                        column: x => x.HabitId,
+                        principalTable: "Habits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HabitRealizations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IfExecuted = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    HabitWeekId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HabitRealizations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HabitRealizations_HabitWeeks_HabitWeekId",
+                        column: x => x.HabitWeekId,
+                        principalTable: "HabitWeeks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -194,6 +301,31 @@ namespace HabitTracker.DataAccess.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HabitRealizations_HabitWeekId",
+                table: "HabitRealizations",
+                column: "HabitWeekId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Habits_UserId",
+                table: "Habits",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HabitWeeks_HabitId",
+                table: "HabitWeeks",
+                column: "HabitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Scores_UserId",
+                table: "Scores",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViewSettings_UserId",
+                table: "ViewSettings",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -215,7 +347,22 @@ namespace HabitTracker.DataAccess.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "HabitRealizations");
+
+            migrationBuilder.DropTable(
+                name: "Scores");
+
+            migrationBuilder.DropTable(
+                name: "ViewSettings");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "HabitWeeks");
+
+            migrationBuilder.DropTable(
+                name: "Habits");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

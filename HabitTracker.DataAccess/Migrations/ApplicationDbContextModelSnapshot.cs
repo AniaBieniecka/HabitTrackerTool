@@ -114,7 +114,13 @@ namespace HabitTracker.DataAccess.Migrations
                     b.Property<int>("ScoreValue")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Scores");
                 });
@@ -379,6 +385,17 @@ namespace HabitTracker.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("habit");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HabitTracker.Models.ViewSetting", b =>

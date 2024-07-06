@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HabitTracker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240704234103_addUserIdToViewSettingTable")]
-    partial class addUserIdToViewSettingTable
+    [Migration("20240706213717_InitializeDB")]
+    partial class InitializeDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,7 +117,13 @@ namespace HabitTracker.DataAccess.Migrations
                     b.Property<int>("ScoreValue")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Scores");
                 });
@@ -382,6 +388,17 @@ namespace HabitTracker.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("habit");
+                });
+
+            modelBuilder.Entity("HabitTracker.Models.ScoringModels.Score", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HabitTracker.Models.ViewSetting", b =>
