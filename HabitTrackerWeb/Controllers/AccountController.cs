@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using HabitTracker.DataAccess.Repository.IRepository;
+using HabitTracker.Models;
 using HabitTracker.Models.ViewModels;
 using HabitTrackerWeb.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -105,6 +106,17 @@ namespace HabitTrackerWeb.Controllers
                 };
 
                 var result = await _userManager.CreateAsync(user, registerVM.Password);
+
+                var viewSetting = new ViewSetting()
+                {
+                    Color = "00CED1",
+                    IconDone = "bi bi-check-square-fill",
+                    IconPartiallyDone = "bi bi-check-square",
+                    UserId = user.Id,
+                };
+
+                _unitOfWork.ViewSetting.Add(viewSetting);
+                _unitOfWork.Save();
 
                 if (result.Succeeded)
                 {

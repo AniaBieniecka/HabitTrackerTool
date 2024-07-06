@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using NuGet.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace HabitTrackerWeb.Controllers
 {
@@ -37,12 +38,10 @@ namespace HabitTrackerWeb.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == week && u.Year == year && u.habit.UserId == userId, includeProperties: "habitRealizations,habit").ToList();
-
-            foreach (var hab in habitWeekList)
+            foreach(var habitWeek in habitWeekList)
             {
-                hab.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+                habitWeek.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u=>u.UserId == userId);
             }
-
             return View(habitWeekList);
         }
 
@@ -67,6 +66,8 @@ namespace HabitTrackerWeb.Controllers
 
             int howManyHabitsInPreviousWeek = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekPrevious && u.Year == yearPreviousWeek && u.habit.UserId == userId).Count();
 
+            var viewSettings = _unitOfWork.ViewSetting.Get(u=>u.UserId == userId);
+
             HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
             {
                 habitWeekList = habitWeekList,
@@ -75,9 +76,9 @@ namespace HabitTrackerWeb.Controllers
                 numberOfWeeks = HowManyWeeks(),
             };
 
-            foreach (var hab in habitWeekList)
+            foreach (var habitWeek in habitsCurrentWeekVM.habitWeekList)
             {
-                hab.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+                habitWeek.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.UserId == userId);
             }
 
             return View(habitsCurrentWeekVM);

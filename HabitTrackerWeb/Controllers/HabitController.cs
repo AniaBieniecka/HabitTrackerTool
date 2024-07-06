@@ -55,7 +55,7 @@ namespace HabitTrackerWeb.Controllers
                 habit.UserId = habitToUpdate.UserId;
                 _unitOfWork.Habit.Update(habit);
                 _unitOfWork.Save();
-                return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+                return RedirectToAction("Index", "Habit");
 
             }
             return View();
@@ -86,7 +86,7 @@ namespace HabitTrackerWeb.Controllers
             _unitOfWork.Habit.Remove(habitFromDB);
             _unitOfWork.Save();
             TempData["success"] = "Category deleted successfully";
-            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+            return RedirectToAction("Index", "Habit");
         }
     }
 }

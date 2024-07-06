@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,7 +33,10 @@ namespace HabitTracker.Models
         [ValidateNever]
         [NotMapped]
         public List<string> availableIconsPartiallyDone { get; set; }
-
-
+        [ValidateNever]
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public IdentityUser User { get; set; }
     }
 }
