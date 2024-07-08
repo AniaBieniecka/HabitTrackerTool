@@ -72,7 +72,7 @@ namespace HabitTrackerWeb.Controllers
             var existingHabitWeek = _unitOfWork.HabitWeek.Get
                 (u => u.WeekNumber == currentWeek && u.Year == mondayDate.Year && u.habit.Name == habitWeek.habit.Name);
 
-            if (existingHabitWeek != null)
+            if (existingHabitWeek != null && habitWeek.HabitId == 0)
             {
                 ModelState.AddModelError("habit.Name", "Habit with this name already exists.");
             }
@@ -192,6 +192,9 @@ namespace HabitTrackerWeb.Controllers
         }
         public IActionResult ChooseHabits(int? habitsCount)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             var habitSuggestion = new HabitSuggestion();
             var habitSuggestionToDisplay = new List<string>();
             var indexList = new List<int>();
@@ -205,7 +208,8 @@ namespace HabitTrackerWeb.Controllers
 
                 if (!indexList.Contains(index))
                 {
-                    var habitInDB = _unitOfWork.Habit.GetAll().FirstOrDefault(hab => hab.Name == habitSuggestion.HabitSuggestions[index]);
+                    var userHabitsInDB = _unitOfWork.Habit.GetAll(u => u.UserId == userId);
+                    var habitInDB = userHabitsInDB.FirstOrDefault(hab => hab.Name == habitSuggestion.HabitSuggestions[index]);
 
                     if (habitInDB is null)
                     {
@@ -225,15 +229,16 @@ namespace HabitTrackerWeb.Controllers
 
         [HttpPost]
         public IActionResult ChooseHabits(string[] habitNames)
-        {
-            DateOnly mondayDate = _dateService.LastMonday();
-            DateOnly loopDate;
-            var habitsFromDB = _unitOfWork.Habit.GetAll();
-            int habitId;
-            bool isHabitFoundInDB = false;
 
+        {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            DateOnly mondayDate = _dateService.LastMonday();
+            DateOnly loopDate;
+            var habitsFromDB = _unitOfWork.Habit.GetAll(u=>u.UserId==userId);
+            int habitId;
+            bool isHabitFoundInDB = false;
 
             foreach (var habitName in habitNames)
             {
