@@ -50,13 +50,13 @@ namespace HabitTrackerWeb.Controllers
                     var user = await _userManager.FindByNameAsync(loginVM.UserName);
                     if (await _userManager.IsInRoleAsync(user, SD.Role_Admin))
                     {
-                        return RedirectToAction("Index", "Dashboard");
+                        return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
                     }
                     else
                     {
                         if (string.IsNullOrEmpty(loginVM.RedirectUrl))
                         {
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
                         }
                         else
                         {
@@ -88,11 +88,17 @@ namespace HabitTrackerWeb.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var userFromDb = users.FirstOrDefault(u=>u.NormalizedEmail==registerVM.UserName.ToUpper());
+            var userByUsername = users.FirstOrDefault(u=>u.NormalizedUserName==registerVM.UserName.ToUpper());
+            var userByEmail = users.FirstOrDefault(u => u.NormalizedEmail == registerVM.Email.ToUpper());
 
-            if(userFromDb != null)
+            if (userByUsername != null)
             {
               ModelState.AddModelError("UserName", "User with this name already exist");
+            }
+
+            if (userByEmail != null)
+            {
+                ModelState.AddModelError("Email", "User with this email already exist");
             }
 
             if (ModelState.IsValid)
@@ -108,38 +114,36 @@ namespace HabitTrackerWeb.Controllers
 
                 var result = await _userManager.CreateAsync(user, registerVM.Password);
 
-                var viewSetting = new ViewSetting()
-                {
-                    Color = "00CED1",
-                    IconDone = "bi bi-check-square-fill",
-                    IconPartiallyDone = "bi bi-check-square",
-                    UserId = user.Id,
-                };
-
-                _unitOfWork.ViewSetting.Add(viewSetting);
-                _unitOfWork.Save();
-
-                var score = new Score() 
-                { 
-                    ScoreValue = 0,
-                    LevelId = 0,
-                    UserId = user.Id
-
-                };
-                _unitOfWork.Score.Update(score);
-                _unitOfWork.Save();
-
                 if (result.Succeeded)
                 {
+                    var viewSetting = new ViewSetting()
+                    {
+                        Color = "#00CED1",
+                        IconDone = "bi bi-check-square-fill",
+                        IconPartiallyDone = "bi bi-check-square",
+                        UserId = user.Id,
+                    };
+
+                    _unitOfWork.ViewSetting.Add(viewSetting);
+                    _unitOfWork.Save();
+
+                    var score = new Score()
+                    {
+                        ScoreValue = 0,
+                        LevelId = 0,
+                        UserId = user.Id
+
+                    };
+                    _unitOfWork.Score.Update(score);
+                    _unitOfWork.Save();
 
                     await _userManager.AddToRoleAsync(user, SD.Role_Customer);
                     
-
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     if (string.IsNullOrEmpty(registerVM.RedirectUrl))
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
                     }
                     else
                     {
