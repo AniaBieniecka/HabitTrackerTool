@@ -13,9 +13,13 @@ using static System.Formats.Asn1.AsnWriter;
 using System.Linq;
 using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using NuGet.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace HabitTrackerWeb.Controllers
 {
+    [Authorize]
     public class HabitRealizationController : Controller
     {
 
@@ -30,13 +34,14 @@ namespace HabitTrackerWeb.Controllers
 
         public IActionResult HabitsWeekly(int? week, int? year)
         {
-            List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == week && u.Year == year, includeProperties: "habitRealizations,habit").ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            foreach (var hab in habitWeekList)
+            List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == week && u.Year == year && u.habit.UserId == userId, includeProperties: "habitRealizations,habit").ToList();
+            foreach(var habitWeek in habitWeekList)
             {
-                hab.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+                habitWeek.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u=>u.UserId == userId);
             }
-
             return View(habitWeekList);
         }
 
@@ -48,19 +53,32 @@ namespace HabitTrackerWeb.Controllers
             DateOnly mondayDate = _dateService.LastMonday();
             int year = mondayDate.Year;
 
-            List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year, includeProperties: "habit,habitRealizations").ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekCurrent && u.Year == year && u.habit.UserId == userId, includeProperties: "habit,habitRealizations").ToList();
+
+            int weekPrevious = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now.AddDays(-7), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            DateOnly lastMondayDate = _dateService.LastMonday();
+            DateOnly mondayDateFromPreviousWeek = lastMondayDate.AddDays(-7);
+            int yearPreviousWeek = mondayDateFromPreviousWeek.Year;
+
+            int howManyHabitsInPreviousWeek = _unitOfWork.HabitWeek.GetAll(u => u.WeekNumber == weekPrevious && u.Year == yearPreviousWeek && u.habit.UserId == userId).Count();
+
+            var viewSettings = _unitOfWork.ViewSetting.Get(u=>u.UserId == userId);
 
             HabitsCurrentWeekVM habitsCurrentWeekVM = new HabitsCurrentWeekVM
             {
                 habitWeekList = habitWeekList,
-                habitsHasAnyData = _unitOfWork.Habit.HasAnyData(),
-                score = _unitOfWork.Score.Get(u => u.Id == 1),
+                howManyHabitsInPreviousWeek = howManyHabitsInPreviousWeek,
+                score = _unitOfWork.Score.Get(u => u.UserId == userId),
                 numberOfWeeks = HowManyWeeks(),
             };
 
-            foreach (var hab in habitWeekList)
+            foreach (var habitWeek in habitsCurrentWeekVM.habitWeekList)
             {
-                hab.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.Id == 1);
+                habitWeek.habit.ViewSetting = _unitOfWork.ViewSetting.Get(u => u.UserId == userId);
             }
 
             return View(habitsCurrentWeekVM);
@@ -69,9 +87,12 @@ namespace HabitTrackerWeb.Controllers
         [HttpGet]
         public IActionResult UpdateIfExecuted(int id)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             try
             {
-                var score = _unitOfWork.Score.Get(u => u.Id == 1);
+                var score = _unitOfWork.Score.Get(u => u.UserId == userId);
                 var scoreValue = score.ScoreValue;
                 var item = _unitOfWork.HabitRealization.Get(u => u.Id == id);
 
@@ -129,7 +150,10 @@ namespace HabitTrackerWeb.Controllers
         }
         public IActionResult Progress()
         {
-            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitRealization> habitRealizations = _unitOfWork.HabitRealization.GetAll(u=>u.habitWeek.habit.UserId == userId).ToList();
             int howManyHabitsInMonth;
 
             if (habitRealizations.Count != 0)
@@ -144,12 +168,12 @@ namespace HabitTrackerWeb.Controllers
                 if (startYear == endYear)
                 {
                     howManyHabitsInMonth = _unitOfWork.HabitWeek.GetAll
-                        (u => u.WeekNumber >= startWeek && u.Year == startYear).GroupBy(u => u.HabitId).Count();
+                        (u => u.WeekNumber >= startWeek && u.Year == startYear && u.habit.UserId == userId).GroupBy(u => u.HabitId).Count();
 
                 }
                 else
                     howManyHabitsInMonth = _unitOfWork.HabitWeek.GetAll
-                        (u => (u.WeekNumber >= startWeek && u.Year == startYear) || (u.WeekNumber <= endWeek && u.Year == endYear))
+                        (u => (u.WeekNumber >= startWeek && u.Year == startYear && u.habit.UserId == userId) || (u.WeekNumber <= endWeek && u.Year == endYear && u.habit.UserId == userId))
                         .GroupBy(u => u.HabitId).Count();
 
                 int chartsQuantity = (int)Math.Ceiling((double)howManyHabitsInMonth / 5);
@@ -161,9 +185,12 @@ namespace HabitTrackerWeb.Controllers
         }
         public IActionResult GetProgressChartData()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             var endDate = DateOnly.FromDateTime(DateTime.Now);
             var startDate = HabitRealizationControllerHelper.StartDayOfChart(endDate);
-            var habitRealizations = _unitOfWork.HabitRealization.GetAll().ToList().FindAll(u => u.Date >= startDate).OrderBy(x => x.Date);
+            var habitRealizations = _unitOfWork.HabitRealization.GetAll(u=> u.habitWeek.habit.UserId == userId).ToList().FindAll(u => u.Date >= startDate).OrderBy(x => x.Date);
             bool isDateFound = false;
             ProgressChartVM progressChartVM = new();
 
@@ -184,7 +211,7 @@ namespace HabitTrackerWeb.Controllers
                     startDate = habitRealizations.FirstOrDefault().Date;
                 }
 
-                List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll().ToList();
+                List<HabitWeek> habitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.habit.UserId == userId).ToList();
                 List<ProgressChartData> progressChartData = new List<ProgressChartData>();
 
                 for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
@@ -239,7 +266,10 @@ namespace HabitTrackerWeb.Controllers
 
         public IActionResult GetProgressChartDataForEachHabit(int chartNumber)
         {
-            List<HabitRealization> allHabitRealizations = _unitOfWork.HabitRealization.GetAll().OrderBy(x => x.Date).ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitRealization> allHabitRealizations = _unitOfWork.HabitRealization.GetAll(u => u.habitWeek.habit.UserId == userId).OrderBy(x => x.Date).ToList();
             List<ProgressChartData> progressChartData = new List<ProgressChartData>();
             List<ChartData> chartDataList = new();
             List<DateOnly> categoriesLineChart = new();
@@ -272,7 +302,7 @@ namespace HabitTrackerWeb.Controllers
                 List<Habit> habits;
                 int habitsSkipped = chartNumber * 5;
 
-                var allHabitWeeks = _unitOfWork.HabitWeek.GetAll(includeProperties: "habit,habitRealizations").ToList();
+                var allHabitWeeks = _unitOfWork.HabitWeek.GetAll(u => u.habit.UserId == userId, includeProperties: "habit,habitRealizations").ToList();
                 var currentHabitWeekList = new List<HabitWeek>();
 
                 if (startYear == endYear)
@@ -384,7 +414,10 @@ namespace HabitTrackerWeb.Controllers
 
             //counting how many weeks are in DB
 
-            List<HabitWeek> allHabitWeekList = _unitOfWork.HabitWeek.GetAll().ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<HabitWeek> allHabitWeekList = _unitOfWork.HabitWeek.GetAll(u => u.habit.UserId == userId).ToList();
             List<int> weekList = new List<int>();
 
             foreach (var hab in allHabitWeekList)

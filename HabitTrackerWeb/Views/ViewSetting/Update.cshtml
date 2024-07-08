@@ -12,6 +12,7 @@
     <div class="container">
         <h2 class="py-4 px-2">Set your icons preferences</h2>
         <form asp-action="Update" asp-controller="ViewSetting" method="post">
+        <input asp-for="@Model.Id" hidden />
 
 
             <div class="row px-2">

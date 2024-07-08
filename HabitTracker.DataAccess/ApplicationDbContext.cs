@@ -1,6 +1,7 @@
 ﻿
 using HabitTracker.Models;
 using HabitTracker.Models.ScoringModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Collections.Specialized;
@@ -8,7 +9,7 @@ using System.ComponentModel;
 
 namespace HabitTracker.DataAccess.Data
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext: IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
         {
@@ -23,8 +24,7 @@ namespace HabitTracker.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ViewSetting>().HasData(new ViewSetting { Id = 1, Color = "00CED1", IconPartiallyDone = "bi bi-check-square", IconDone = "bi bi-check-square-fill" }); 
-            modelBuilder.Entity<Score>().HasData(new Score { Id = 1, ScoreValue = 0 }); 
+            base.OnModelCreating(modelBuilder);
 
         }
 

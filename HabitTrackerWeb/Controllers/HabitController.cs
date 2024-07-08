@@ -3,13 +3,16 @@ using HabitTracker.Models;
 using HabitTracker.Models.ViewModels;
 using HabitTrackerWeb.Controllers.Services;
 using HabitTrackerWeb.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace HabitTrackerWeb.Controllers
 {
+    [Authorize]
     public class HabitController : Controller
     {
 
@@ -23,7 +26,10 @@ namespace HabitTrackerWeb.Controllers
 
         public IActionResult Index()
         {
-            List<Habit> objHabitList = _unitOfWork.Habit.GetAll(includeProperties: "habitWeeks").ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<Habit> objHabitList = _unitOfWork.Habit.GetAll(u=>u.UserId == userId, includeProperties: "habitWeeks").ToList();
             return View(objHabitList);
         }
 
@@ -46,9 +52,10 @@ namespace HabitTrackerWeb.Controllers
 
                 Habit habitToUpdate = _unitOfWork.Habit.Get(u => u.Id == habit.Id);
                 habitToUpdate.Name = habit.Name;
+                habit.UserId = habitToUpdate.UserId;
                 _unitOfWork.Habit.Update(habit);
                 _unitOfWork.Save();
-                return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+                return RedirectToAction("Index", "Habit");
 
             }
             return View();
@@ -79,7 +86,7 @@ namespace HabitTrackerWeb.Controllers
             _unitOfWork.Habit.Remove(habitFromDB);
             _unitOfWork.Save();
             TempData["success"] = "Category deleted successfully";
-            return RedirectToAction("HabitsCurrentWeek", "HabitRealization");
+            return RedirectToAction("Index", "Habit");
         }
     }
 }

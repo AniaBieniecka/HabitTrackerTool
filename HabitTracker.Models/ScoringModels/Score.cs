@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,10 +19,10 @@ namespace HabitTracker.Models.ScoringModels
         [DisplayName("Score value")]
         public int ScoreValue { get; set; }
         public int LevelId { get; set; }
-        public Score()
-        {
-            ScoreValue = 0;
-        }
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public IdentityUser User { get; set; }
 
     }
 }

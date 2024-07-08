@@ -28,7 +28,7 @@
                     <input type="hidden" id="habitsCount" value="@Model.habitWeekList.Count" />
                 </a>
                 </div>
-                @if (Model.habitWeekList.Count == 0 && Model.habitsHasAnyData == true)
+                @if (Model.habitWeekList.Count == 0 && Model.howManyHabitsInPreviousWeek != 0)
                 {
                     <div class="col-lg-8 col-md-10 col-sm-12 col-10 mb-3">
 
@@ -95,7 +95,7 @@
 
                             @foreach (var obj in habitWeek.habitRealizations)
                             {
-                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@obj.habitWeek.habit.ViewSetting.IconPartiallyDone', @habitWeek.Id, '@habitWeek.habit.ViewSetting.Color')" )>
+                                <td id="@obj.Id" onclick="updateIfExecutedStatus(@obj.Id, @obj.IfExecuted, '@habitWeek.habit.ViewSetting.IconPartiallyDone', @habitWeek.Id, '@habitWeek.habit.ViewSetting.Color')" )>
 
                                     <span id="icon-@obj.Id" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;">
 
@@ -105,7 +105,7 @@
                                         }
                                         else if (obj.IfExecuted == 2)
                                         {
-                                            <i class="@habitWeek.habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color:@habitWeek.habit.ViewSetting.Color;"></i>
+                                            <i class="@habitWeek.habit.ViewSetting.IconPartiallyDone" style="font-size: 1.5rem; color: @habitWeek.habit.ViewSetting.Color;"></i>
 
                                         }
 
