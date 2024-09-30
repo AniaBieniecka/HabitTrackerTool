@@ -1,5 +1,5 @@
 # Description
-Application Habit Tracker Tool helps user to track their habits and motivate them by showing statistics and counting points for each habit realization.
+Application Habit Tracker Tool helps user to track their habits and motivates them by showing statistics and counting points for each habit realization.
 
 [Link to the application](https://habittracker.codingproject.hostingasp.pl/)
 
@@ -27,5 +27,5 @@ ApexCharts.js <br>
   
 ## Usefull information for testing:
 
-Yo can test application using below link. Login data for testing are available on the Login page
+Yo can test application using a below link. Login data for testing are available on the Login page <br>
 [Link to the application](https://habittracker.codingproject.hostingasp.pl/)
